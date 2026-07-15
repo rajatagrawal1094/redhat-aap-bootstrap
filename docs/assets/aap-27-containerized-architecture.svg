@@ -1,0 +1,154 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="1050" viewBox="0 0 1600 1050" role="img" aria-labelledby="title desc">
+  <title id="title">AAP 2.7 containerized lab architecture</title>
+  <desc id="desc">Single-node Red Hat Ansible Automation Platform 2.7 lab on RHEL 10.2. Browser traffic enters the automation gateway proxy, platform services run as standalone Podman containers, PostgreSQL and Redis provide shared data services, and Podman volumes provide persistence.</desc>
+  <defs>
+    <style>
+      .bg { fill: #f7f8fa; }
+      .vm { fill: #ffffff; stroke: #1f2d3a; stroke-width: 2.2; }
+      .band { fill: #edf4fa; stroke: #6f8ba7; stroke-width: 1.4; }
+      .band-alt { fill: #f4f8f0; stroke: #73945c; stroke-width: 1.4; }
+      .title { font: 700 34px Arial, Helvetica, sans-serif; fill: #152231; }
+      .subtitle { font: 400 18px Arial, Helvetica, sans-serif; fill: #405264; }
+      .section-title { font: 700 20px Arial, Helvetica, sans-serif; fill: #152231; }
+      .label { font: 700 16px Arial, Helvetica, sans-serif; fill: #152231; }
+      .small { font: 400 13px Arial, Helvetica, sans-serif; fill: #405264; }
+      .tiny { font: 400 12px Arial, Helvetica, sans-serif; fill: #405264; }
+      .mono { font: 400 12px Menlo, Consolas, monospace; fill: #405264; }
+      .node { fill: #ffffff; stroke: #315f8c; stroke-width: 1.5; }
+      .node-primary { fill: #e7f2ff; stroke: #2364aa; stroke-width: 1.8; }
+      .node-data { fill: #fff4e6; stroke: #b85c00; stroke-width: 1.7; }
+      .node-runtime { fill: #f3f8ee; stroke: #4f7d32; stroke-width: 1.5; }
+      .node-deferred { fill: #faf6ff; stroke: #8a64b8; stroke-width: 1.5; stroke-dasharray: 7 5; }
+      .node-external { fill: #ffffff; stroke: #7d8da1; stroke-width: 1.5; }
+      .edge { stroke: #455d75; stroke-width: 2.2; fill: none; marker-end: url(#arrow); }
+      .edge-soft { stroke: #7d8da1; stroke-width: 1.8; fill: none; marker-end: url(#arrow-soft); stroke-dasharray: 6 5; }
+      .edge-data { stroke: #b85c00; stroke-width: 2; fill: none; marker-end: url(#arrow-data); }
+      .bus { stroke: #455d75; stroke-width: 2; fill: none; }
+      .tag { fill: #1f2d3a; }
+      .tag-text { font: 700 12px Arial, Helvetica, sans-serif; fill: #ffffff; }
+      .legend { font: 400 14px Arial, Helvetica, sans-serif; fill: #405264; }
+    </style>
+    <marker id="arrow" markerWidth="11" markerHeight="8" refX="10" refY="4" orient="auto">
+      <path d="M0,0 L10,4 L0,8 Z" fill="#455d75"/>
+    </marker>
+    <marker id="arrow-soft" markerWidth="11" markerHeight="8" refX="10" refY="4" orient="auto">
+      <path d="M0,0 L10,4 L0,8 Z" fill="#7d8da1"/>
+    </marker>
+    <marker id="arrow-data" markerWidth="11" markerHeight="8" refX="10" refY="4" orient="auto">
+      <path d="M0,0 L10,4 L0,8 Z" fill="#b85c00"/>
+    </marker>
+  </defs>
+
+  <rect class="bg" width="1600" height="1050"/>
+
+  <text class="title" x="60" y="58">Red Hat Ansible Automation Platform 2.7 Containerized Lab</text>
+  <text class="subtitle" x="60" y="88">Single-node RHEL 10.2 VM: aap.lab.example.com / 192.168.34.155 / standalone Podman containers</text>
+
+  <rect class="node-external" x="80" y="125" width="255" height="74" rx="10"/>
+  <text class="label" x="122" y="157">Workstation Browser</text>
+  <text class="small" x="122" y="180">HTTPS to AAP gateway</text>
+
+  <rect class="node-external" x="395" y="125" width="255" height="74" rx="10"/>
+  <text class="label" x="443" y="157">GitHub Repository</text>
+  <text class="small" x="443" y="180">configuration-as-code source</text>
+
+  <rect class="node-external" x="710" y="125" width="255" height="74" rx="10"/>
+  <text class="label" x="756" y="157">registry.redhat.io</text>
+  <text class="small" x="756" y="180">AAP and RHEL container images</text>
+
+  <rect class="vm" x="60" y="235" width="1480" height="735" rx="14"/>
+  <text class="section-title" x="90" y="273">RHEL 10.2 VM - aap.lab.example.com</text>
+  <text class="subtitle" x="90" y="300">8 vCPU, 48 GB RAM, 500 GB disk, non-FIPS, Red Hat subscription registered, NetworkManager DNS fixed for registry access</text>
+
+  <rect class="band" x="90" y="330" width="1420" height="145" rx="10"/>
+  <text class="section-title" x="115" y="365">Ingress And Platform Gateway</text>
+  <rect class="node-primary" x="165" y="392" width="230" height="58" rx="8"/>
+  <text class="label" x="206" y="417">automation-gateway-proxy</text>
+  <text class="small" x="220" y="437">Envoy front door</text>
+  <rect class="node-primary" x="475" y="392" width="230" height="58" rx="8"/>
+  <text class="label" x="524" y="417">automation-gateway</text>
+  <text class="small" x="537" y="437">AAP API and routing</text>
+  <rect class="node" x="785" y="392" width="230" height="58" rx="8"/>
+  <text class="label" x="860" y="417">receptor</text>
+  <text class="small" x="835" y="437">automation control mesh</text>
+  <rect class="node-runtime" x="1095" y="392" width="300" height="58" rx="8"/>
+  <text class="label" x="1154" y="417">Podman Runtime</text>
+  <text class="small" x="1150" y="437">No pods reported by podman pod ps</text>
+
+  <path class="edge" d="M208 199 L208 392"/>
+  <path class="edge-soft" d="M522 199 C522 262 584 310 590 392"/>
+  <path class="edge-soft" d="M838 199 C970 252 1120 285 1245 392"/>
+  <path class="edge" d="M395 421 L475 421"/>
+  <path class="edge" d="M705 421 L785 421"/>
+
+  <rect class="band" x="90" y="505" width="1420" height="250" rx="10"/>
+  <text class="section-title" x="115" y="540">AAP Application Services</text>
+
+  <rect class="node" x="130" y="570" width="315" height="125" rx="9"/>
+  <text class="label" x="203" y="600">Automation Controller</text>
+  <text class="mono" x="165" y="626">automation-controller-web</text>
+  <text class="mono" x="165" y="648">automation-controller-task</text>
+  <text class="mono" x="165" y="670">automation-controller-rsyslog</text>
+  <text class="small" x="165" y="690">port shown by containers: 8052/tcp</text>
+
+  <rect class="node" x="475" y="570" width="315" height="125" rx="9"/>
+  <text class="label" x="556" y="600">Event-Driven Ansible</text>
+  <text class="mono" x="510" y="626">automation-eda-api / daphne / web</text>
+  <text class="mono" x="510" y="648">automation-eda-worker-1..2</text>
+  <text class="mono" x="510" y="670">automation-eda-activation-worker-1..2</text>
+  <text class="small" x="510" y="690">web ports shown: 8080/tcp, 8443/tcp</text>
+
+  <rect class="node" x="820" y="570" width="315" height="125" rx="9"/>
+  <text class="label" x="912" y="600">Private Automation Hub</text>
+  <text class="mono" x="855" y="626">automation-hub-api / content / web</text>
+  <text class="mono" x="855" y="648">automation-hub-worker-1..2</text>
+  <text class="small" x="855" y="670">Pulp services for collections and content</text>
+  <text class="small" x="855" y="690">web ports shown: 8080/tcp, 8443/tcp</text>
+
+  <rect class="node" x="1165" y="570" width="315" height="125" rx="9"/>
+  <text class="label" x="1238" y="600">Automation Metrics</text>
+  <text class="mono" x="1200" y="626">automation-metrics-web</text>
+  <text class="mono" x="1200" y="648">automation-metrics-tasks</text>
+  <text class="mono" x="1200" y="670">automation-metrics-scheduler</text>
+  <text class="small" x="1200" y="690">dashboard collection disabled initially</text>
+
+  <path class="bus" d="M590 450 L590 520 L1322 520"/>
+  <path class="edge" d="M287 520 L287 570"/>
+  <path class="edge" d="M632 520 L632 570"/>
+  <path class="edge" d="M977 520 L977 570"/>
+  <path class="edge" d="M1322 520 L1322 570"/>
+
+  <rect class="band-alt" x="90" y="785" width="945" height="135" rx="10"/>
+  <text class="section-title" x="115" y="820">Shared Data And State</text>
+  <rect class="node-data" x="130" y="845" width="190" height="54" rx="8"/>
+  <text class="label" x="181" y="867">PostgreSQL</text>
+  <text class="small" x="190" y="887">5432/tcp</text>
+  <rect class="node-data" x="350" y="845" width="190" height="54" rx="8"/>
+  <text class="label" x="424" y="867">Redis</text>
+  <text class="small" x="391" y="887">unix and tcp instances</text>
+  <rect class="node-runtime" x="570" y="838" width="430" height="68" rx="8"/>
+  <text class="label" x="688" y="861">Persistent Podman Volumes</text>
+  <text class="tiny" x="622" y="880">postgresql, redis_*, gateway_nginx</text>
+  <text class="tiny" x="622" y="895">receptor_*, controller_nginx, eda_*, hub_*</text>
+
+  <path class="edge-data" d="M287 695 L225 845"/>
+  <path class="edge-data" d="M632 695 L225 845"/>
+  <path class="edge-data" d="M977 695 L225 845"/>
+  <path class="edge-data" d="M1322 695 L225 845"/>
+  <path class="edge-data" d="M900 450 C840 640 730 755 445 845"/>
+
+  <rect class="band" x="1065" y="785" width="445" height="135" rx="10"/>
+  <text class="section-title" x="1090" y="820">Deferred Add-Ons</text>
+  <rect class="node-deferred" x="1105" y="850" width="175" height="48" rx="8"/>
+  <text class="label" x="1134" y="870">Lightspeed</text>
+  <text class="tiny" x="1130" y="889">model/API setup later</text>
+  <rect class="node-deferred" x="1300" y="850" width="175" height="48" rx="8"/>
+  <text class="label" x="1332" y="870">MCP Server</text>
+  <text class="tiny" x="1322" y="889">enable after base platform</text>
+
+  <rect class="tag" x="70" y="995" width="112" height="26" rx="13"/>
+  <text class="tag-text" x="96" y="1013">Installed</text>
+  <text class="legend" x="198" y="1013">Solid nodes represent containers running after the completed AAP 2.7 base install.</text>
+  <rect class="node-deferred" x="805" y="995" width="34" height="24" rx="6"/>
+  <text class="legend" x="852" y="1013">Dashed nodes are add-ons intentionally deferred until the base platform is validated.</text>
+</svg>

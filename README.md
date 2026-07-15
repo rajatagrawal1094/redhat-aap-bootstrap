@@ -47,6 +47,12 @@ Deferred add-ons:
 
 ## Target Architecture
 
+![AAP 2.7 containerized lab architecture](docs/assets/aap-27-containerized-architecture.svg)
+
+Interactive explorer: [docs/interactive/aap-architecture.html](docs/interactive/aap-architecture.html). Open it locally or serve it through GitHub Pages for full interactivity.
+
+Platform screenshots: [docs/platform-screenshots.md](docs/platform-screenshots.md)
+
 ```text
 GitHub repository
   |

@@ -23,3 +23,5 @@ ignore: |
   .github/
   build/
   dist/
+  docs/assets/
+  docs/interactive/

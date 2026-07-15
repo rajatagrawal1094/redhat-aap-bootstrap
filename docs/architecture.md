@@ -6,6 +6,14 @@ title: Architecture
 
 This project manages Red Hat Ansible Automation Platform as an enterprise automation service.
 
+## AAP 2.7 Containerized Lab Diagram
+
+![AAP 2.7 containerized lab architecture](assets/aap-27-containerized-architecture.svg)
+
+Interactive explorer: [aap-architecture.html](interactive/aap-architecture.html). Open it locally or serve it through GitHub Pages for full interactivity.
+
+PNG export: [aap-27-containerized-architecture.png](assets/aap-27-containerized-architecture.png)
+
 ## Logical Components
 
 - GitHub repository: source of truth for platform configuration and automation content.

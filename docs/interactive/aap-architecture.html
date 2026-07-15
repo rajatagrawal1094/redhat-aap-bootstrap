@@ -1,0 +1,872 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>AAP 2.7 Interactive Architecture Explorer</title>
+  <style>
+    :root {
+      --bg: #f6f8fb;
+      --surface: #ffffff;
+      --surface-soft: #eef5fb;
+      --surface-green: #f2f8ef;
+      --surface-orange: #fff5e8;
+      --surface-purple: #faf6ff;
+      --text: #172333;
+      --muted: #506176;
+      --border: #9db0c4;
+      --strong-border: #365f89;
+      --accent: #2364aa;
+      --accent-soft: #e7f2ff;
+      --orange: #b85c00;
+      --green: #4f7d32;
+      --purple: #8a64b8;
+      --shadow: 0 18px 48px rgba(23, 35, 51, 0.08);
+      --radius: 8px;
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.45;
+    }
+
+    main {
+      width: min(1480px, calc(100vw - 32px));
+      margin: 24px auto 40px;
+    }
+
+    h1,
+    h2,
+    h3,
+    p {
+      margin-top: 0;
+    }
+
+    h1 {
+      margin-bottom: 8px;
+      font-size: clamp(1.5rem, 2.4vw, 2.4rem);
+      line-height: 1.15;
+    }
+
+    h2 {
+      font-size: 1rem;
+      margin-bottom: 12px;
+    }
+
+    h3 {
+      font-size: 0.95rem;
+      margin-bottom: 8px;
+    }
+
+    button {
+      font: inherit;
+    }
+
+    .page-header {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 20px;
+      align-items: end;
+      margin-bottom: 18px;
+    }
+
+    .subtitle {
+      color: var(--muted);
+      margin-bottom: 0;
+      max-width: 900px;
+    }
+
+    .header-actions {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      justify-content: flex-end;
+    }
+
+    .link-button {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 38px;
+      padding: 8px 12px;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      color: var(--text);
+      text-decoration: none;
+      background: var(--surface);
+    }
+
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(130px, 1fr));
+      gap: 12px;
+      margin-bottom: 16px;
+    }
+
+    .stat {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 14px;
+    }
+
+    .stat span {
+      display: block;
+      color: var(--muted);
+      font-size: 0.82rem;
+    }
+
+    .stat strong {
+      display: block;
+      font-size: 1.35rem;
+      margin-top: 2px;
+    }
+
+    .controls {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      align-items: center;
+      margin-bottom: 16px;
+    }
+
+    .filter-button {
+      min-height: 36px;
+      padding: 7px 11px;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      background: var(--surface);
+      color: var(--text);
+      cursor: pointer;
+    }
+
+    .filter-button[aria-pressed="true"] {
+      background: var(--text);
+      color: #ffffff;
+      border-color: var(--text);
+    }
+
+    .workspace {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) 380px;
+      gap: 18px;
+      align-items: start;
+    }
+
+    .diagram {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      padding: 18px;
+      overflow: hidden;
+    }
+
+    .external-row,
+    .gateway-row,
+    .services-row,
+    .data-row,
+    .deferred-row {
+      display: grid;
+      gap: 14px;
+      margin-bottom: 16px;
+    }
+
+    .external-row {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+
+    .host-frame {
+      border: 2px solid var(--text);
+      border-radius: var(--radius);
+      padding: 18px;
+      background: linear-gradient(180deg, #ffffff 0%, #fbfdff 100%);
+    }
+
+    .host-title {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      flex-wrap: wrap;
+      margin-bottom: 14px;
+      color: var(--muted);
+      font-size: 0.92rem;
+    }
+
+    .host-title strong {
+      color: var(--text);
+      font-size: 1rem;
+    }
+
+    .section {
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 14px;
+      background: var(--surface-soft);
+      margin-bottom: 14px;
+    }
+
+    .section:last-child {
+      margin-bottom: 0;
+    }
+
+    .gateway-row {
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+    }
+
+    .services-row {
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+    }
+
+    .data-row {
+      grid-template-columns: 1fr 1fr 2fr;
+    }
+
+    .deferred-row {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .node {
+      display: block;
+      width: 100%;
+      min-height: 78px;
+      text-align: left;
+      border: 1.5px solid var(--strong-border);
+      border-radius: var(--radius);
+      background: var(--surface);
+      color: var(--text);
+      padding: 12px;
+      cursor: pointer;
+      transition: transform 150ms ease, border-color 150ms ease, opacity 150ms ease, background 150ms ease;
+    }
+
+    .node:hover {
+      transform: translateY(-1px);
+      border-color: var(--accent);
+    }
+
+    .node[aria-pressed="true"] {
+      background: var(--accent-soft);
+      border-color: var(--accent);
+      outline: 3px solid rgba(35, 100, 170, 0.16);
+    }
+
+    .node.is-dimmed {
+      opacity: 0.35;
+    }
+
+    .node-title {
+      display: block;
+      font-weight: 700;
+      margin-bottom: 4px;
+    }
+
+    .node-subtitle {
+      display: block;
+      color: var(--muted);
+      font-size: 0.86rem;
+    }
+
+    .node.primary {
+      background: var(--accent-soft);
+    }
+
+    .node.data {
+      background: var(--surface-orange);
+      border-color: var(--orange);
+    }
+
+    .node.runtime {
+      background: var(--surface-green);
+      border-color: var(--green);
+    }
+
+    .node.deferred {
+      background: var(--surface-purple);
+      border-color: var(--purple);
+      border-style: dashed;
+    }
+
+    .section.data-section {
+      background: var(--surface-green);
+    }
+
+    .section.deferred-section {
+      background: #f3f7fb;
+    }
+
+    .detail {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      padding: 18px;
+      position: sticky;
+      top: 18px;
+    }
+
+    .detail-kicker {
+      color: var(--muted);
+      font-size: 0.82rem;
+      margin-bottom: 4px;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+
+    .detail-title {
+      margin-bottom: 8px;
+      font-size: 1.35rem;
+      line-height: 1.2;
+    }
+
+    .detail-role {
+      color: var(--muted);
+      margin-bottom: 16px;
+    }
+
+    .detail-section {
+      border-top: 1px solid var(--border);
+      padding-top: 14px;
+      margin-top: 14px;
+    }
+
+    .pill-list {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin: 0;
+      padding: 0;
+      list-style: none;
+    }
+
+    .pill {
+      border: 1px solid var(--border);
+      border-radius: 999px;
+      padding: 4px 9px;
+      color: var(--text);
+      background: #f9fbfd;
+      font-size: 0.82rem;
+      overflow-wrap: anywhere;
+    }
+
+    .container-list {
+      display: grid;
+      gap: 8px;
+      margin: 0;
+      padding: 0;
+      list-style: none;
+    }
+
+    .container-item {
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 9px;
+      background: #fbfcfe;
+    }
+
+    .container-item strong {
+      display: block;
+      margin-bottom: 3px;
+      overflow-wrap: anywhere;
+    }
+
+    code {
+      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace;
+      font-size: 0.86em;
+      color: #26384d;
+      overflow-wrap: anywhere;
+    }
+
+    .note {
+      color: var(--muted);
+      margin-bottom: 0;
+    }
+
+    .mobile-hint {
+      display: none;
+      color: var(--muted);
+      font-size: 0.88rem;
+      margin-bottom: 12px;
+    }
+
+    @media (max-width: 1120px) {
+      .workspace {
+        grid-template-columns: 1fr;
+      }
+
+      .detail {
+        position: static;
+      }
+    }
+
+    @media (max-width: 900px) {
+      main {
+        width: min(100vw - 20px, 1480px);
+        margin-top: 14px;
+      }
+
+      .page-header {
+        grid-template-columns: 1fr;
+      }
+
+      .header-actions {
+        justify-content: flex-start;
+      }
+
+      .stats,
+      .external-row,
+      .gateway-row,
+      .services-row,
+      .data-row,
+      .deferred-row {
+        grid-template-columns: 1fr;
+      }
+
+      .mobile-hint {
+        display: block;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main>
+    <header class="page-header">
+      <div>
+        <h1>AAP 2.7 Interactive Architecture Explorer</h1>
+        <p class="subtitle">Click a component to inspect the installed containers, ports, images, volumes, and installation notes from the single-node containerized lab.</p>
+      </div>
+      <div class="header-actions" aria-label="Related diagrams">
+        <a class="link-button" href="../assets/aap-27-containerized-architecture.svg">Static SVG</a>
+        <a class="link-button" href="../assets/aap-27-containerized-architecture.png">Static PNG</a>
+      </div>
+    </header>
+
+    <section class="stats" aria-label="Installed platform summary">
+      <div class="stat"><span>Running containers</span><strong>24</strong></div>
+      <div class="stat"><span>Podman pods</span><strong>0</strong></div>
+      <div class="stat"><span>Persistent volumes</span><strong>14</strong></div>
+      <div class="stat"><span>Base install</span><strong>AAP 2.7</strong></div>
+    </section>
+
+    <nav class="controls" aria-label="Component filters">
+      <button class="filter-button" type="button" data-filter="all" aria-pressed="true">All</button>
+      <button class="filter-button" type="button" data-filter="gateway" aria-pressed="false">Gateway</button>
+      <button class="filter-button" type="button" data-filter="controller" aria-pressed="false">Controller</button>
+      <button class="filter-button" type="button" data-filter="eda" aria-pressed="false">EDA</button>
+      <button class="filter-button" type="button" data-filter="hub" aria-pressed="false">Hub</button>
+      <button class="filter-button" type="button" data-filter="metrics" aria-pressed="false">Metrics</button>
+      <button class="filter-button" type="button" data-filter="data" aria-pressed="false">Data</button>
+      <button class="filter-button" type="button" data-filter="deferred" aria-pressed="false">Deferred</button>
+    </nav>
+
+    <div class="workspace">
+      <section class="diagram" aria-label="AAP containerized architecture">
+        <p class="mobile-hint">The diagram stacks on smaller screens. Use the filter buttons to focus on one layer at a time.</p>
+
+        <div class="external-row">
+          <button class="node" type="button" data-component="workstation" data-layer="external">
+            <span class="node-title">Workstation Browser</span>
+            <span class="node-subtitle">HTTPS access to AAP gateway</span>
+          </button>
+          <button class="node" type="button" data-component="github" data-layer="external">
+            <span class="node-title">GitHub Repository</span>
+            <span class="node-subtitle">Configuration-as-code source</span>
+          </button>
+          <button class="node" type="button" data-component="registry" data-layer="external">
+            <span class="node-title">registry.redhat.io</span>
+            <span class="node-subtitle">AAP and RHEL container images</span>
+          </button>
+        </div>
+
+        <div class="host-frame">
+          <div class="host-title">
+            <strong>RHEL 10.2 VM - aap.lab.example.com</strong>
+            <span>192.168.34.155 / ARM64 / 8 vCPU / 48 GB RAM / 500 GB disk</span>
+          </div>
+
+          <section class="section" aria-label="Ingress and platform gateway">
+            <h2>Ingress And Platform Gateway</h2>
+            <div class="gateway-row">
+              <button class="node primary" type="button" data-component="gateway-proxy" data-layer="gateway">
+                <span class="node-title">Gateway Proxy</span>
+                <span class="node-subtitle">automation-gateway-proxy</span>
+              </button>
+              <button class="node primary" type="button" data-component="gateway" data-layer="gateway">
+                <span class="node-title">Gateway</span>
+                <span class="node-subtitle">automation-gateway</span>
+              </button>
+              <button class="node" type="button" data-component="receptor" data-layer="gateway">
+                <span class="node-title">Receptor</span>
+                <span class="node-subtitle">control mesh container</span>
+              </button>
+              <button class="node runtime" type="button" data-component="runtime" data-layer="runtime">
+                <span class="node-title">Podman Runtime</span>
+                <span class="node-subtitle">standalone containers, no pods</span>
+              </button>
+            </div>
+          </section>
+
+          <section class="section" aria-label="AAP application services">
+            <h2>AAP Application Services</h2>
+            <div class="services-row">
+              <button class="node" type="button" data-component="controller" data-layer="controller">
+                <span class="node-title">Automation Controller</span>
+                <span class="node-subtitle">web, task, rsyslog</span>
+              </button>
+              <button class="node" type="button" data-component="eda" data-layer="eda">
+                <span class="node-title">Event-Driven Ansible</span>
+                <span class="node-subtitle">api, daphne, web, workers</span>
+              </button>
+              <button class="node" type="button" data-component="hub" data-layer="hub">
+                <span class="node-title">Private Automation Hub</span>
+                <span class="node-subtitle">api, content, web, workers</span>
+              </button>
+              <button class="node" type="button" data-component="metrics" data-layer="metrics">
+                <span class="node-title">Automation Metrics</span>
+                <span class="node-subtitle">web, tasks, scheduler</span>
+              </button>
+            </div>
+          </section>
+
+          <section class="section data-section" aria-label="Shared data and state">
+            <h2>Shared Data And State</h2>
+            <div class="data-row">
+              <button class="node data" type="button" data-component="postgresql" data-layer="data">
+                <span class="node-title">PostgreSQL</span>
+                <span class="node-subtitle">postgresql, 5432/tcp</span>
+              </button>
+              <button class="node data" type="button" data-component="redis" data-layer="data">
+                <span class="node-title">Redis</span>
+                <span class="node-subtitle">redis-unix and redis-tcp</span>
+              </button>
+              <button class="node runtime" type="button" data-component="volumes" data-layer="data">
+                <span class="node-title">Persistent Podman Volumes</span>
+                <span class="node-subtitle">database, cache, gateway, receptor, controller, EDA, hub</span>
+              </button>
+            </div>
+          </section>
+
+          <section class="section deferred-section" aria-label="Deferred add-ons">
+            <h2>Deferred Add-Ons</h2>
+            <div class="deferred-row">
+              <button class="node deferred" type="button" data-component="lightspeed" data-layer="deferred">
+                <span class="node-title">Ansible Lightspeed</span>
+                <span class="node-subtitle">model/API setup later</span>
+              </button>
+              <button class="node deferred" type="button" data-component="mcp" data-layer="deferred">
+                <span class="node-title">Ansible MCP Server</span>
+                <span class="node-subtitle">enable after base validation</span>
+              </button>
+            </div>
+          </section>
+        </div>
+      </section>
+
+      <aside class="detail" aria-live="polite">
+        <div class="detail-kicker" id="detail-layer">Gateway</div>
+        <h2 class="detail-title" id="detail-title">Gateway</h2>
+        <p class="detail-role" id="detail-role"></p>
+
+        <div class="detail-section">
+          <h3>Containers</h3>
+          <ul class="container-list" id="detail-containers"></ul>
+        </div>
+
+        <div class="detail-section">
+          <h3>Ports</h3>
+          <ul class="pill-list" id="detail-ports"></ul>
+        </div>
+
+        <div class="detail-section">
+          <h3>Volumes</h3>
+          <ul class="pill-list" id="detail-volumes"></ul>
+        </div>
+
+        <div class="detail-section">
+          <h3>Install Notes</h3>
+          <p class="note" id="detail-notes"></p>
+        </div>
+      </aside>
+    </div>
+  </main>
+
+  <script>
+    const components = {
+      workstation: {
+        layer: "External",
+        title: "Workstation Browser",
+        role: "Primary user entry point. Readers access the AAP platform gateway over HTTPS by using the lab FQDN.",
+        containers: [],
+        ports: ["HTTPS to aap.lab.example.com"],
+        volumes: [],
+        notes: "The workstation must resolve aap.lab.example.com to the lab VM address."
+      },
+      github: {
+        layer: "External",
+        title: "GitHub Repository",
+        role: "Source of truth for platform bootstrap code, documentation, execution environment definitions, and demo automation.",
+        containers: [],
+        ports: ["HTTPS to GitHub"],
+        volumes: [],
+        notes: "The base install is manual. Later bootstrap milestones use this repository to configure AAP objects as code."
+      },
+      registry: {
+        layer: "External",
+        title: "registry.redhat.io",
+        role: "Container image registry used by the online AAP containerized installer.",
+        containers: [],
+        ports: ["HTTPS 443"],
+        volumes: [],
+        notes: "The lab initially failed to resolve registry.redhat.io through 192.168.34.2. Setting DNS to 1.1.1.1 and 8.8.8.8 fixed registry access."
+      },
+      "gateway-proxy": {
+        layer: "Gateway",
+        title: "Automation Gateway Proxy",
+        role: "Envoy-based front door for the platform gateway.",
+        containers: [
+          ["automation-gateway-proxy", "registry.redhat.io/ansible-automation-platform-27/gateway-proxy-rhel9:latest"]
+        ],
+        ports: ["front door proxy"],
+        volumes: ["gateway_nginx"],
+        notes: "Browser traffic reaches AAP through the gateway layer."
+      },
+      gateway: {
+        layer: "Gateway",
+        title: "Automation Gateway",
+        role: "Platform entry point for AAP APIs and service routing.",
+        containers: [
+          ["automation-gateway", "registry.redhat.io/ansible-automation-platform-27/gateway-rhel9:latest"]
+        ],
+        ports: ["internal platform routing"],
+        volumes: ["gateway_nginx"],
+        notes: "The installer admin password maps to the platform gateway admin login."
+      },
+      receptor: {
+        layer: "Gateway",
+        title: "Receptor",
+        role: "Automation control mesh service used by AAP components.",
+        containers: [
+          ["receptor", "registry.redhat.io/ansible-automation-platform-27/receptor-rhel9:latest"]
+        ],
+        ports: ["internal receptor communication"],
+        volumes: ["receptor_run", "receptor_runner", "receptor_home", "receptor_data"],
+        notes: "Receptor is part of the installed base platform even before custom execution workflows are added."
+      },
+      runtime: {
+        layer: "Runtime",
+        title: "Podman Runtime",
+        role: "Runs AAP services as standalone containers on the RHEL VM.",
+        containers: [],
+        ports: ["container ports are internal unless published by gateway"],
+        volumes: [],
+        notes: "podman pod ps reported no pods. The installer created standalone containers and named volumes."
+      },
+      controller: {
+        layer: "Controller",
+        title: "Automation Controller",
+        role: "Runs inventories, projects, credentials, job templates, and workflows.",
+        containers: [
+          ["automation-controller-web", "registry.redhat.io/ansible-automation-platform-27/controller-rhel9:latest"],
+          ["automation-controller-task", "registry.redhat.io/ansible-automation-platform-27/controller-rhel9:latest"],
+          ["automation-controller-rsyslog", "registry.redhat.io/ansible-automation-platform-27/controller-rhel9:latest"]
+        ],
+        ports: ["8052/tcp shown by containers"],
+        volumes: ["controller_nginx"],
+        notes: "This is the main target for the next configuration-as-code milestone."
+      },
+      eda: {
+        layer: "EDA",
+        title: "Event-Driven Ansible",
+        role: "Provides event-driven automation services and activation workers.",
+        containers: [
+          ["automation-eda-api", "registry.redhat.io/ansible-automation-platform-27/eda-controller-rhel9:latest"],
+          ["automation-eda-daphne", "registry.redhat.io/ansible-automation-platform-27/eda-controller-rhel9:latest"],
+          ["automation-eda-web", "registry.redhat.io/ansible-automation-platform-27/eda-controller-ui-rhel9:latest"],
+          ["automation-eda-worker-1", "registry.redhat.io/ansible-automation-platform-27/eda-controller-rhel9:latest"],
+          ["automation-eda-worker-2", "registry.redhat.io/ansible-automation-platform-27/eda-controller-rhel9:latest"],
+          ["automation-eda-activation-worker-1", "registry.redhat.io/ansible-automation-platform-27/eda-controller-rhel9:latest"],
+          ["automation-eda-activation-worker-2", "registry.redhat.io/ansible-automation-platform-27/eda-controller-rhel9:latest"]
+        ],
+        ports: ["automation-eda-web: 8080/tcp", "automation-eda-web: 8443/tcp"],
+        volumes: ["eda_data", "eda_nginx"],
+        notes: "EDA is installed in the base lab. Portfolio workflows can be added after controller and hub bootstrap."
+      },
+      hub: {
+        layer: "Hub",
+        title: "Private Automation Hub",
+        role: "Provides internal automation content services for collections and execution environment references.",
+        containers: [
+          ["automation-hub-api", "registry.redhat.io/ansible-automation-platform-27/hub-rhel9:latest"],
+          ["automation-hub-content", "registry.redhat.io/ansible-automation-platform-27/hub-rhel9:latest"],
+          ["automation-hub-web", "registry.redhat.io/ansible-automation-platform-27/hub-web-rhel9:latest"],
+          ["automation-hub-worker-1", "registry.redhat.io/ansible-automation-platform-27/hub-rhel9:latest"],
+          ["automation-hub-worker-2", "registry.redhat.io/ansible-automation-platform-27/hub-rhel9:latest"]
+        ],
+        ports: ["automation-hub-web: 8080/tcp", "automation-hub-web: 8443/tcp"],
+        volumes: ["hub_data", "hub_nginx"],
+        notes: "The project later uses Hub to demonstrate collection and execution environment governance patterns."
+      },
+      metrics: {
+        layer: "Metrics",
+        title: "Automation Metrics Service",
+        role: "Collects platform metrics and supports reporting services.",
+        containers: [
+          ["automation-metrics-web", "registry.redhat.io/ansible-automation-platform-27/metrics-service-rhel9:latest"],
+          ["automation-metrics-tasks", "registry.redhat.io/ansible-automation-platform-27/metrics-service-rhel9:latest"],
+          ["automation-metrics-scheduler", "registry.redhat.io/ansible-automation-platform-27/metrics-service-rhel9:latest"]
+        ],
+        ports: ["internal service ports"],
+        volumes: [],
+        notes: "[automationmetrics] was required by installer preflight. FEATURE_DASHBOARD_COLLECTION_ENABLED=false kept dashboard-specific collection disabled for the first install."
+      },
+      postgresql: {
+        layer: "Data",
+        title: "PostgreSQL",
+        role: "Shared database service for the single-node AAP lab.",
+        containers: [
+          ["postgresql", "registry.redhat.io/rhel9/postgresql-15:latest"]
+        ],
+        ports: ["5432/tcp"],
+        volumes: ["postgresql"],
+        notes: "Each AAP component has its own configured database password in the private installer inventory."
+      },
+      redis: {
+        layer: "Data",
+        title: "Redis",
+        role: "Cache and message broker support for the AAP services.",
+        containers: [
+          ["redis-unix", "registry.redhat.io/rhel9/redis-6:latest"],
+          ["redis-tcp", "registry.redhat.io/rhel9/redis-6:latest"]
+        ],
+        ports: ["6379/tcp"],
+        volumes: ["redis_data_unix", "redis_run", "redis_data_tcp"],
+        notes: "The installer inventory uses redis_mode=standalone for this single-node lab."
+      },
+      volumes: {
+        layer: "Data",
+        title: "Persistent Podman Volumes",
+        role: "Stateful storage created by the installer for database, cache, gateway, receptor, controller, EDA, and hub services.",
+        containers: [],
+        ports: [],
+        volumes: [
+          "postgresql",
+          "redis_data_unix",
+          "redis_run",
+          "redis_data_tcp",
+          "gateway_nginx",
+          "receptor_run",
+          "receptor_runner",
+          "receptor_home",
+          "receptor_data",
+          "controller_nginx",
+          "eda_data",
+          "eda_nginx",
+          "hub_data",
+          "hub_nginx"
+        ],
+        notes: "These volumes are part of the post-install evidence captured from podman volume ls."
+      },
+      lightspeed: {
+        layer: "Deferred",
+        title: "Ansible Lightspeed",
+        role: "Deferred add-on for AI-assisted automation content workflows.",
+        containers: [],
+        ports: [],
+        volumes: [],
+        notes: "The base install intentionally deferred Lightspeed until model, API, and provider requirements are ready."
+      },
+      mcp: {
+        layer: "Deferred",
+        title: "Ansible MCP Server",
+        role: "Deferred add-on for exposing AAP capabilities to MCP-compatible clients.",
+        containers: [],
+        ports: ["planned service endpoint after enablement"],
+        volumes: [],
+        notes: "MCP was deferred until after base platform validation. First enablement should keep write operations disabled."
+      }
+    };
+
+    const nodes = Array.from(document.querySelectorAll(".node"));
+    const filterButtons = Array.from(document.querySelectorAll(".filter-button"));
+    const detailLayer = document.getElementById("detail-layer");
+    const detailTitle = document.getElementById("detail-title");
+    const detailRole = document.getElementById("detail-role");
+    const detailContainers = document.getElementById("detail-containers");
+    const detailPorts = document.getElementById("detail-ports");
+    const detailVolumes = document.getElementById("detail-volumes");
+    const detailNotes = document.getElementById("detail-notes");
+
+    function renderList(target, values, renderer) {
+      target.innerHTML = "";
+      if (!values.length) {
+        const empty = document.createElement("li");
+        empty.className = "pill";
+        empty.textContent = "None";
+        target.appendChild(empty);
+        return;
+      }
+      values.forEach((value) => target.appendChild(renderer(value)));
+    }
+
+    function renderPill(value) {
+      const item = document.createElement("li");
+      item.className = "pill";
+      item.textContent = value;
+      return item;
+    }
+
+    function renderContainer(value) {
+      const item = document.createElement("li");
+      item.className = "container-item";
+      const name = document.createElement("strong");
+      name.textContent = value[0];
+      const image = document.createElement("code");
+      image.textContent = value[1];
+      item.append(name, image);
+      return item;
+    }
+
+    function selectComponent(id) {
+      const component = components[id];
+      if (!component) return;
+      nodes.forEach((node) => {
+        node.setAttribute("aria-pressed", String(node.dataset.component === id));
+      });
+      detailLayer.textContent = component.layer;
+      detailTitle.textContent = component.title;
+      detailRole.textContent = component.role;
+      renderList(detailContainers, component.containers, renderContainer);
+      renderList(detailPorts, component.ports, renderPill);
+      renderList(detailVolumes, component.volumes, renderPill);
+      detailNotes.textContent = component.notes;
+    }
+
+    function setFilter(layer) {
+      filterButtons.forEach((button) => {
+        button.setAttribute("aria-pressed", String(button.dataset.filter === layer));
+      });
+      nodes.forEach((node) => {
+        const matches = layer === "all" || node.dataset.layer === layer;
+        node.classList.toggle("is-dimmed", !matches);
+      });
+    }
+
+    nodes.forEach((node) => {
+      node.addEventListener("click", () => selectComponent(node.dataset.component));
+    });
+
+    filterButtons.forEach((button) => {
+      button.addEventListener("click", () => setFilter(button.dataset.filter));
+    });
+
+    selectComponent("gateway");
+  </script>
+</body>
+</html>
