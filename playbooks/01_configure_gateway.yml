@@ -1,0 +1,9 @@
+---
+- name: Configure or validate AAP platform gateway settings
+  hosts: localhost
+  gather_facts: false
+
+  tasks:
+    - name: Placeholder for gateway authentication and validation
+      ansible.builtin.debug:
+        msg: "Gateway connectivity automation will be implemented after connection details are defined."

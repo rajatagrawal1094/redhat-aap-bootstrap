@@ -1,0 +1,19 @@
+---
+job_templates:
+  - name: Linux - Precheck
+    organization: Platform Engineering
+    inventory: Lab Linux Inventory
+    project: Enterprise Automation Demo Content
+    playbook: demo-content/linux-patching/precheck.yml
+    execution_environment: EE Platform Base
+    credentials:
+      - Demo Linux Machine Credential
+
+  - name: Linux - Patch and Validate
+    organization: Platform Engineering
+    inventory: Lab Linux Inventory
+    project: Enterprise Automation Demo Content
+    playbook: demo-content/linux-patching/patch_and_validate.yml
+    execution_environment: EE Platform Base
+    credentials:
+      - Demo Linux Machine Credential

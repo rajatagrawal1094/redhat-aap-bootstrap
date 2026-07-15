@@ -1,0 +1,10 @@
+---
+notification_templates:
+  - name: Platform Slack Notifications
+    organization: Platform Engineering
+    notification_type: slack
+    description: Example notification template. Do not commit real webhook URLs.
+    notification_configuration:
+      channels:
+        - "#automation-platform"
+      token: "{{ vault_slack_webhook_token | default('REPLACE_WITH_PRIVATE_SECRET') }}"

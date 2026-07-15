@@ -1,0 +1,16 @@
+---
+- name: Run Linux patching prechecks
+  hosts: linux_demo
+  gather_facts: true
+  become: true
+
+  tasks:
+    - name: Show target host and OS family
+      ansible.builtin.debug:
+        msg:
+          host: "{{ inventory_hostname }}"
+          os_family: "{{ ansible_facts.os_family }}"
+
+    - name: Placeholder for package manager and service prechecks
+      ansible.builtin.debug:
+        msg: "Future implementation will validate disk space, package manager locks, service health, and patch window."

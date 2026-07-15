@@ -1,0 +1,19 @@
+---
+- name: Validate local prerequisites for AAP bootstrap
+  hosts: localhost
+  gather_facts: false
+
+  tasks:
+    - name: Confirm Ansible can run locally
+      ansible.builtin.debug:
+        msg: "Local Ansible execution is working."
+
+    - name: Show configured AAP endpoint if provided
+      ansible.builtin.debug:
+        msg: "AAP endpoint: {{ aap_hostname | default(lookup('ansible.builtin.env', 'AAP_HOST') | default('not set', true), true) }}"
+
+    - name: Remind operator to provide private connection values
+      ansible.builtin.debug:
+        msg:
+          - "Copy inventories/group_vars/all.example.yml to a private group_vars/all.yml or export environment variables."
+          - "Do not commit AAP tokens, passwords, registry credentials, or vault secrets."

@@ -1,0 +1,9 @@
+---
+- name: Create demo workflow templates
+  hosts: localhost
+  gather_facts: false
+
+  tasks:
+    - name: Placeholder for enterprise Linux patch workflow
+      ansible.builtin.debug:
+        msg: "Workflow creation will connect precheck, patching, validation, reporting, and notification jobs."

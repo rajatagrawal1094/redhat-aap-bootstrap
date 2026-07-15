@@ -1,0 +1,9 @@
+---
+- name: Configure Private Automation Hub objects
+  hosts: localhost
+  gather_facts: false
+
+  tasks:
+    - name: Placeholder for private automation hub configuration
+      ansible.builtin.debug:
+        msg: "Hub namespace, collection, and execution environment governance tasks will be implemented here."

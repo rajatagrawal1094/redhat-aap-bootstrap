@@ -1,0 +1,12 @@
+---
+profile: production
+offline: true
+exclude_paths:
+  - .cache/
+  - .github/
+  - build/
+  - dist/
+warn_list:
+  - experimental
+skip_list:
+  - yaml[line-length]

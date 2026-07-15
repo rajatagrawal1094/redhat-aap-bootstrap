@@ -1,0 +1,25 @@
+---
+workflow_job_templates:
+  - name: Enterprise Linux Patch and Compliance Workflow
+    organization: Platform Engineering
+    description: Demo workflow for precheck, patching, validation, reporting, and notification.
+    survey_enabled: true
+    survey_spec:
+      name: Patch Window Survey
+      description: Collects patch window and reboot preference.
+      spec:
+        - question_name: Patch window
+          question_description: Approved maintenance window.
+          required: true
+          type: text
+          variable: requested_patch_window
+          default: sunday
+        - question_name: Allow reboot
+          question_description: Permit reboot if required by updates.
+          required: true
+          type: multiplechoice
+          variable: allow_reboot
+          choices:
+            - "yes"
+            - "no"
+          default: "no"

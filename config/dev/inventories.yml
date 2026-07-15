@@ -1,0 +1,14 @@
+---
+inventories:
+  - name: Lab Linux Inventory
+    organization: Platform Engineering
+    description: Demo Linux inventory for patching and compliance workflows.
+    variables:
+      environment: lab
+      patch_window: sunday
+
+  - name: Lab Windows Inventory
+    organization: Platform Engineering
+    description: Demo Windows inventory for future automation workflows.
+    variables:
+      environment: lab

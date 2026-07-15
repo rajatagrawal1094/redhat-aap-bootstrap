@@ -1,0 +1,4 @@
+hvac
+requests
+cryptography
+jmespath

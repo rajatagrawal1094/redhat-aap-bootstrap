@@ -1,0 +1,4 @@
+---
+aap_hostname: "{{ lookup('ansible.builtin.env', 'AAP_HOST') | default('', true) }}"
+aap_validate_certs: true
+aap_health_endpoint: "/api/gateway/v1/status/"

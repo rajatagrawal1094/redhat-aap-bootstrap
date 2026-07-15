@@ -1,0 +1,8 @@
+---
+# Example file for subscription-backed environments.
+# Validate certified collection names and sources against your AAP subscription
+# before copying this to a private requirements.aap.yml file.
+collections:
+  - name: ansible.controller
+  - name: ansible.hub
+  - name: infra.aap_configuration

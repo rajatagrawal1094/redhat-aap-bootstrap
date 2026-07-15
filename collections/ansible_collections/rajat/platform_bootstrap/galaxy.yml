@@ -1,0 +1,17 @@
+---
+namespace: rajat
+name: platform_bootstrap
+version: 0.1.0
+readme: README.md
+authors:
+  - Rajat Agrawal
+description: Roles and plugins for bootstrapping Red Hat Ansible Automation Platform as code.
+license:
+  - MIT
+tags:
+  - ansible
+  - aap
+  - automation
+  - platform
+  - infrastructure
+repository: https://github.com/rajatagrawal1094/redhat-aap-bootstrap

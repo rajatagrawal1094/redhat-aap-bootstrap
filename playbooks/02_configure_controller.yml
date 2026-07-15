@@ -1,0 +1,27 @@
+---
+- name: Configure automation controller objects as code
+  hosts: localhost
+  gather_facts: false
+  vars:
+    config_dir: "{{ playbook_dir }}/../config/dev"
+
+  tasks:
+    - name: Load organization configuration
+      ansible.builtin.include_vars:
+        file: "{{ config_dir }}/organizations.yml"
+        name: org_config
+
+    - name: Load team configuration
+      ansible.builtin.include_vars:
+        file: "{{ config_dir }}/teams.yml"
+        name: team_config
+
+    - name: Show planned controller object counts
+      ansible.builtin.debug:
+        msg:
+          organizations: "{{ org_config.organizations | length }}"
+          teams: "{{ team_config.teams | length }}"
+
+    - name: Placeholder for controller configuration tasks
+      ansible.builtin.debug:
+        msg: "Controller configuration roles will create organizations, teams, RBAC, inventories, credentials, projects, and templates."

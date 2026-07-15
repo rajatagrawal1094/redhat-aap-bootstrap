@@ -1,0 +1,10 @@
+---
+projects:
+  - name: Enterprise Automation Demo Content
+    organization: Platform Engineering
+    description: Demo automation content used by portfolio workflows.
+    scm_type: git
+    scm_url: https://github.com/rajatagrawal1094/redhat-aap-bootstrap.git
+    scm_branch: main
+    scm_clean: true
+    scm_update_on_launch: true

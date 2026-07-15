@@ -1,0 +1,17 @@
+---
+role_assignments:
+  - team: Platform Admins
+    organization: Platform Engineering
+    role: admin
+  - team: Automation Developers
+    organization: Platform Engineering
+    role: execute
+  - team: Linux Operators
+    organization: Platform Engineering
+    role: execute
+  - team: Security Automation
+    organization: Platform Engineering
+    role: execute
+  - team: Auditors
+    organization: Platform Engineering
+    role: read

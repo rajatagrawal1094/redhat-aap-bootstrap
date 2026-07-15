@@ -1,0 +1,9 @@
+---
+- name: Validate configured AAP platform
+  hosts: localhost
+  gather_facts: false
+
+  tasks:
+    - name: Placeholder for AAP platform validation
+      ansible.builtin.debug:
+        msg: "Platform validation will verify API reachability, configured objects, templates, and workflow launch readiness."

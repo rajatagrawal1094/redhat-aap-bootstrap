@@ -1,0 +1,37 @@
+.DS_Store
+.cache/
+.pytest_cache/
+.molecule/
+.venv/
+venv/
+
+# Ansible runtime artifacts
+*.retry
+artifacts/
+*.log
+
+# Local secrets and environment files
+.env
+.env.*
+!.env.example
+*.vault
+vault.yml
+vault.yaml
+vault-password.txt
+group_vars/all.yml
+host_vars/
+
+# AAP and registry sensitive material
+manifest.zip
+*.pem
+*.key
+*.p12
+*.crt
+auth.json
+containers-auth.json
+
+# Build output
+dist/
+build/
+*.tar.gz
+context/

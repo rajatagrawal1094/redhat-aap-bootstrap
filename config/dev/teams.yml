@@ -1,0 +1,17 @@
+---
+teams:
+  - name: Platform Admins
+    organization: Platform Engineering
+    description: Administrators for the automation platform.
+  - name: Automation Developers
+    organization: Platform Engineering
+    description: Engineers who develop and maintain automation content.
+  - name: Linux Operators
+    organization: Platform Engineering
+    description: Operators who run approved Linux automation jobs.
+  - name: Security Automation
+    organization: Platform Engineering
+    description: Security-focused automation maintainers and operators.
+  - name: Auditors
+    organization: Platform Engineering
+    description: Read-only reviewers for automation configuration and job history.

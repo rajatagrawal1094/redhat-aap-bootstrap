@@ -1,0 +1,10 @@
+---
+- name: Patch and validate Linux hosts
+  hosts: linux_demo
+  gather_facts: true
+  become: true
+
+  tasks:
+    - name: Placeholder for controlled patching workflow
+      ansible.builtin.debug:
+        msg: "Future implementation will apply updates, reboot when approved, validate services, and generate a report."

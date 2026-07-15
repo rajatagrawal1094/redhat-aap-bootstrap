@@ -1,0 +1,22 @@
+---
+users:
+  - username: platform.admin
+    first_name: Platform
+    last_name: Admin
+    email: platform.admin@example.com
+  - username: automation.dev
+    first_name: Automation
+    last_name: Developer
+    email: automation.dev@example.com
+  - username: linux.operator
+    first_name: Linux
+    last_name: Operator
+    email: linux.operator@example.com
+  - username: security.operator
+    first_name: Security
+    last_name: Operator
+    email: security.operator@example.com
+  - username: audit.viewer
+    first_name: Audit
+    last_name: Viewer
+    email: audit.viewer@example.com

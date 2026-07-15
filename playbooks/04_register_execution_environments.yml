@@ -1,0 +1,16 @@
+---
+- name: Register execution environments in AAP
+  hosts: localhost
+  gather_facts: false
+  vars:
+    config_dir: "{{ playbook_dir }}/../config/dev"
+
+  tasks:
+    - name: Load execution environment configuration
+      ansible.builtin.include_vars:
+        file: "{{ config_dir }}/execution_environments.yml"
+        name: ee_config
+
+    - name: Show execution environments to register
+      ansible.builtin.debug:
+        var: ee_config.execution_environments

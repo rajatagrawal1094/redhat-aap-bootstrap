@@ -1,0 +1,23 @@
+---
+- name: Validate AAP hostname is defined
+  ansible.builtin.assert:
+    that:
+      - aap_hostname | length > 0
+    fail_msg: "Set aap_hostname or export AAP_HOST before running the AAP health check."
+
+- name: Check AAP health endpoint
+  ansible.builtin.uri:
+    url: "{{ aap_hostname | trim('/') }}{{ aap_health_endpoint }}"
+    method: GET
+    validate_certs: "{{ aap_validate_certs }}"
+    status_code:
+      - 200
+      - 401
+      - 403
+  register: aap_health_check_result
+
+- name: Report AAP health endpoint status
+  ansible.builtin.debug:
+    msg:
+      endpoint: "{{ aap_hostname | trim('/') }}{{ aap_health_endpoint }}"
+      status: "{{ aap_health_check_result.status }}"

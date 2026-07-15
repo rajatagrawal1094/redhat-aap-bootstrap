@@ -1,0 +1,16 @@
+---
+execution_environments:
+  - name: EE Platform Base
+    image: registry.example.com/automation/ee-platform-base:latest
+    organization: Platform Engineering
+    description: Base execution environment for platform configuration and Linux operations.
+
+  - name: EE Cloud Automation
+    image: registry.example.com/automation/ee-cloud-automation:latest
+    organization: Platform Engineering
+    description: Execution environment for cloud and Kubernetes automation.
+
+  - name: EE Security Automation
+    image: registry.example.com/automation/ee-security-automation:latest
+    organization: Platform Engineering
+    description: Execution environment for security and compliance automation.
