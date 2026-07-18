@@ -1,0 +1,72 @@
+---
+aap_hostname_effective: >-
+  {{
+    lookup('ansible.builtin.env', 'AAP_HOST')
+    | default(aap_hostname | default('https://aap.lab.example.com', true), true)
+  }}
+aap_token_effective: >-
+  {{
+    lookup('ansible.builtin.env', 'AAP_TOKEN')
+    | default(aap_token | default('', true), true)
+  }}
+aap_validate_certs_effective: >-
+  {{
+    lookup('ansible.builtin.env', 'AAP_VERIFY_SSL')
+    | default(aap_validate_certs | default(true, true), true)
+    | bool
+  }}
+aap_request_timeout: 30
+aap_success_status_codes:
+  - 200
+  - 202
+
+aap_auth_headers:
+  Authorization: "Bearer {{ aap_token_effective }}"
+  Accept: application/json
+
+aap_required_service_names:
+  - platform gateway
+  - automation controller
+
+aap_service_checks:
+  - name: platform gateway
+    endpoints:
+      - /api/gateway/v1/
+      - /api/gateway/v1/me/
+      - /api/gateway/v1/status/
+
+  - name: automation controller
+    endpoints:
+      - /api/controller/v2/ping/
+      - /api/controller/v2/config/
+      - /api/controller/v2/organizations/
+
+  - name: private automation hub
+    endpoints:
+      - /api/automation-hub/pulp/api/v3/status/
+      - /api/galaxy/pulp/api/v3/status/
+      - /api/galaxy/v3/
+
+  - name: event-driven ansible
+    endpoints:
+      - /api/eda/v1/
+      - /api/eda/v1/status/
+
+  - name: automation metrics service
+    endpoints:
+      - /api/metrics/v1/
+      - /api/metrics/
+
+aap_controller_read_checks:
+  - name: organizations
+    endpoint: /api/controller/v2/organizations/
+  - name: users
+    endpoint: /api/controller/v2/users/
+  - name: teams
+    endpoint: /api/controller/v2/teams/
+  - name: inventories
+    endpoint: /api/controller/v2/inventories/
+  - name: projects
+    endpoint: /api/controller/v2/projects/
+  - name: job_templates
+    endpoint: /api/controller/v2/job_templates/

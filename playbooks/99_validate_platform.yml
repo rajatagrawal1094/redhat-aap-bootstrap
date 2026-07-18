@@ -2,8 +2,77 @@
 - name: Validate configured AAP platform
   hosts: localhost
   gather_facts: false
+  vars_files:
+    - vars/aap_api.yml
+  vars:
+    aap_required_service_names:
+      - platform gateway
+      - automation controller
+      - private automation hub
+      - event-driven ansible
 
   tasks:
-    - name: Placeholder for AAP platform validation
+    - name: Probe installed AAP service APIs
+      ansible.builtin.include_tasks: tasks/probe_aap_api.yml
+
+    - name: Query controller resources
+      ansible.builtin.uri:
+        url: "{{ aap_base_url }}{{ item.endpoint }}"
+        method: GET
+        headers: "{{ aap_auth_headers }}"
+        validate_certs: "{{ aap_validate_certs_effective }}"
+        timeout: "{{ aap_request_timeout }}"
+        return_content: true
+        status_code: "{{ aap_success_status_codes + [401, 403, 404, 500, 502, 503] }}"
+      register: aap_controller_read_raw
+      changed_when: false
+      failed_when: false
+      no_log: true
+      loop: "{{ aap_controller_read_checks }}"
+      loop_control:
+        label: "{{ item.name }}"
+
+    - name: Build sanitized controller resource results
+      ansible.builtin.set_fact:
+        aap_controller_read_results: >-
+          {{
+            aap_controller_read_results | default([])
+            + [
+                {
+                  'resource': item.item.name,
+                  'endpoint': item.item.endpoint,
+                  'status': item.status | default(0),
+                  'count': item.json.count | default('unknown'),
+                  'ok': item.status | default(0) in aap_success_status_codes
+                }
+              ]
+          }}
+      loop: "{{ aap_controller_read_raw.results }}"
+      loop_control:
+        label: "{{ item.item.name }}"
+
+    - name: Show controller resource summary
       ansible.builtin.debug:
-        msg: "Platform validation will verify API reachability, configured objects, templates, and workflow launch readiness."
+        msg: >-
+          {{ item.resource }}: HTTP {{ item.status }}, count={{ item.count }}
+      loop: "{{ aap_controller_read_results }}"
+      loop_control:
+        label: "{{ item.resource }}"
+
+    - name: Assert controller resources can be queried
+      ansible.builtin.assert:
+        that:
+          - item.ok
+        fail_msg: >-
+          Could not query controller resource {{ item.resource }} through
+          {{ item.endpoint }}. HTTP status: {{ item.status }}.
+      loop: "{{ aap_controller_read_results }}"
+      loop_control:
+        label: "{{ item.resource }}"
+
+    - name: Show platform validation result
+      ansible.builtin.debug:
+        msg:
+          - "AAP endpoint: {{ aap_base_url }}"
+          - "Required installed services were reachable through the gateway."
+          - "Controller read checks completed successfully."

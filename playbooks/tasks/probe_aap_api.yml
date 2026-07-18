@@ -1,0 +1,138 @@
+---
+- name: Normalize AAP hostname
+  ansible.builtin.set_fact:
+    aap_base_url: "{{ aap_hostname_effective | regex_replace('/+$', '') }}"
+    aap_endpoint_probes: []
+    aap_endpoint_results: []
+    aap_service_results: []
+
+- name: Require AAP hostname
+  ansible.builtin.assert:
+    that:
+      - aap_base_url is match('^https?://')
+    fail_msg: >-
+      Set AAP_HOST to the platform gateway URL, for example
+      https://aap.lab.example.com.
+
+- name: Require AAP OAuth2 token
+  ansible.builtin.assert:
+    that:
+      - aap_token_effective | length > 0
+      - aap_token_effective != 'change-me'
+    fail_msg: >-
+      Set AAP_TOKEN to an OAuth2 bearer token generated from the AAP platform
+      gateway before running API checks.
+
+- name: Build AAP endpoint probe matrix
+  ansible.builtin.set_fact:
+    aap_endpoint_probes: >-
+      {{
+        aap_endpoint_probes | default([])
+        + [
+            {
+              'service': item.0.name,
+              'endpoint': item.1,
+              'url': aap_base_url ~ item.1
+            }
+          ]
+      }}
+  loop: "{{ aap_service_checks | subelements('endpoints') }}"
+  loop_control:
+    label: "{{ item.0.name }} {{ item.1 }}"
+
+- name: Probe AAP gateway API endpoints
+  ansible.builtin.uri:
+    url: "{{ item.url }}"
+    method: GET
+    headers: "{{ aap_auth_headers }}"
+    validate_certs: "{{ aap_validate_certs_effective }}"
+    timeout: "{{ aap_request_timeout }}"
+    return_content: false
+    status_code: "{{ aap_success_status_codes + [301, 302, 307, 308, 401, 403, 404, 405, 500, 502, 503] }}"
+  register: aap_endpoint_probe_raw
+  changed_when: false
+  failed_when: false
+  no_log: true
+  loop: "{{ aap_endpoint_probes }}"
+  loop_control:
+    label: "{{ item.service }} {{ item.endpoint }}"
+
+- name: Build sanitized AAP endpoint results
+  ansible.builtin.set_fact:
+    aap_endpoint_results: >-
+      {{
+        aap_endpoint_results | default([])
+        + [
+            {
+              'service': item.item.service,
+              'endpoint': item.item.endpoint,
+              'status': item.status | default(0),
+              'ok': item.status | default(0) in aap_success_status_codes
+            }
+          ]
+      }}
+  loop: "{{ aap_endpoint_probe_raw.results }}"
+  loop_control:
+    label: "{{ item.item.service }} {{ item.item.endpoint }}"
+
+- name: Build sanitized AAP service summary
+  ansible.builtin.set_fact:
+    aap_service_results: >-
+      {{
+        aap_service_results | default([])
+        + [
+            {
+              'service': item.name,
+              'available': (
+                aap_endpoint_results
+                | selectattr('service', 'equalto', item.name)
+                | selectattr('ok')
+                | list
+                | length
+              ) > 0,
+              'successful_endpoints': (
+                aap_endpoint_results
+                | selectattr('service', 'equalto', item.name)
+                | selectattr('ok')
+                | map(attribute='endpoint')
+                | list
+              ),
+              'checked_endpoints': (
+                aap_endpoint_results
+                | selectattr('service', 'equalto', item.name)
+                | list
+              )
+            }
+          ]
+      }}
+  loop: "{{ aap_service_checks }}"
+  loop_control:
+    label: "{{ item.name }}"
+
+- name: Show AAP service probe summary
+  ansible.builtin.debug:
+    msg: >-
+      {{ item.service }}: {{
+        'available through ' ~ item.successful_endpoints | join(', ')
+        if item.available
+        else 'not available through checked endpoints'
+      }}
+  loop: "{{ aap_service_results }}"
+  loop_control:
+    label: "{{ item.service }}"
+
+- name: Assert required AAP services are reachable
+  ansible.builtin.assert:
+    that:
+      - item.available
+    fail_msg: >-
+      Required service {{ item.service }} was not reachable through the AAP
+      platform gateway. Checked endpoints: {{ item.checked_endpoints }}
+  loop: >-
+    {{
+      aap_service_results
+      | selectattr('service', 'in', aap_required_service_names)
+      | list
+    }}
+  loop_control:
+    label: "{{ item.service }}"

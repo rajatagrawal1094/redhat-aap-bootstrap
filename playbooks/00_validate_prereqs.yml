@@ -2,18 +2,30 @@
 - name: Validate local prerequisites for AAP bootstrap
   hosts: localhost
   gather_facts: false
+  vars_files:
+    - vars/aap_api.yml
 
   tasks:
     - name: Confirm Ansible can run locally
       ansible.builtin.debug:
         msg: "Local Ansible execution is working."
 
-    - name: Show configured AAP endpoint if provided
-      ansible.builtin.debug:
-        msg: "AAP endpoint: {{ aap_hostname | default(lookup('ansible.builtin.env', 'AAP_HOST') | default('not set', true), true) }}"
+    - name: Validate local command line tools
+      ansible.builtin.command:
+        cmd: "{{ item }}"
+      changed_when: false
+      loop:
+        - ansible-playbook --version
+        - ansible-galaxy --version
+      loop_control:
+        label: "{{ item }}"
 
-    - name: Remind operator to provide private connection values
+    - name: Probe AAP platform gateway and controller APIs
+      ansible.builtin.include_tasks: tasks/probe_aap_api.yml
+
+    - name: Show prerequisite validation result
       ansible.builtin.debug:
         msg:
-          - "Copy inventories/group_vars/all.example.yml to a private group_vars/all.yml or export environment variables."
-          - "Do not commit AAP tokens, passwords, registry credentials, or vault secrets."
+          - "AAP endpoint: {{ aap_base_url }}"
+          - "SSL verification: {{ aap_validate_certs_effective }}"
+          - "Required API checks passed for platform gateway and automation controller."

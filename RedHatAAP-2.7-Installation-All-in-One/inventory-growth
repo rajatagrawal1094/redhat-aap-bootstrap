@@ -1,0 +1,100 @@
+# This is the AAP installer inventory file intended for the Container growth deployment topology.
+# This inventory file expects to be run from the host where AAP will be installed.
+# Please consult the Ansible Automation Platform product documentation about this topology's tested hardware configuration.
+# https://docs.redhat.com/en/documentation/red_hat_ansible_automation_platform/2.7/plan-ref_installation_deployment_models
+#
+# Please consult the docs if you're unsure what to add.
+# For all optional variables, consult the included README.md
+# or the Ansible Automation Platform documentation:
+# https://docs.redhat.com/en/documentation/red_hat_ansible_automation_platform/2.7/install-con_aap_containerized_installation_intro
+
+# This section is for your AAP Gateway host(s)
+# -----------------------------------------------------
+[automationgateway]
+aap.lab.example.com
+
+# This section is for your AAP Controller host(s)
+# -----------------------------------------------------
+[automationcontroller]
+aap.lab.example.com
+
+# This section is for your AAP Automation Hub host(s)
+# -----------------------------------------------------
+[automationhub]
+aap.lab.example.com
+
+# This section is for your AAP EDA Controller host(s)
+# -----------------------------------------------------
+[automationeda]
+aap.lab.example.com
+
+# This section is for your AAP Automation Metrics Service host(s)
+# -----------------------------------------------------
+[automationmetrics]
+aap.lab.example.com
+
+# This section is for your AAP Lightspeed host(s)
+# -----------------------------------------------------
+# [ansiblelightspeed]
+# aap.example.org
+
+# This section is for your Ansible MCP Server host(s)
+# -----------------------------------------------------
+# [ansiblemcp]
+# aap.example.org
+
+# This section is for the AAP database
+# -----------------------------------------------------
+[database]
+aap.lab.example.com
+
+[all:vars]
+# Ansible
+ansible_connection=local
+
+# For a comprehensive list of all inventory file variables, see:
+# https://docs.redhat.com/en/documentation/red_hat_ansible_automation_platform/2.7/install-assembly_appendix_inventory_file_vars
+
+# Common variables
+# -----------------------------------------------------
+postgresql_admin_username=postgres
+postgresql_admin_password=<hiddeen>
+
+registry_username=<username>
+registry_password=<hiddeen>
+
+redis_mode=standalone
+
+# AAP Gateway
+# -----------------------------------------------------
+gateway_admin_password=<hiddeen>
+gateway_pg_host=aap.lab.example.com
+gateway_pg_password=<hiddeen>
+
+# AAP Controller
+# -----------------------------------------------------
+controller_admin_password=<hiddeen>
+controller_pg_host=aap.lab.example.com
+controller_pg_password=<hiddeen>
+controller_percent_memory_capacity=0.5
+
+# AAP Automation Hub
+# -----------------------------------------------------
+hub_admin_password=<hiddeen>
+hub_pg_host=aap.lab.example.com
+hub_pg_password=<hiddeen>
+hub_seed_collections=false
+
+# AAP EDA Controller
+# -----------------------------------------------------
+eda_admin_password=<hiddeen>
+eda_pg_host=aap.lab.example.com
+eda_pg_password=<hiddeen>
+
+# AAP Automation Metrics Service
+# -----------------------------------------------------
+automationmetrics_pg_host=aap.lab.example.com
+automationmetrics_pg_password=<hiddeen>
+automationmetrics_controller_read_pg_host=aap.lab.example.com
+automationmetrics_controller_read_pg_password=<hiddeen>
+FEATURE_DASHBOARD_COLLECTION_ENABLED=false

@@ -14,6 +14,8 @@ This project targets **Red Hat Ansible Automation Platform 2.7**. See [AAP 2.7 L
 
 For a complete reader-facing setup walkthrough, see [AAP 2.7 Step-by-Step Installation Guide](docs/aap-27-step-by-step-installation-guide.md).
 
+After installation, validate API connectivity with [AAP API Connectivity](docs/aap-api-connectivity.md).
+
 ## Current Lab Status
 
 The base AAP 2.7 containerized platform install is complete in the lab.
@@ -111,6 +113,12 @@ Validate local prerequisites:
 
 ```bash
 make validate-prereqs
+```
+
+Validate the installed AAP services through the platform gateway:
+
+```bash
+make validate-platform
 ```
 
 The AAP connection values are intentionally not committed. Copy `.env.example` or `inventories/group_vars/all.example.yml` into private local files before connecting this project to a real AAP instance.
