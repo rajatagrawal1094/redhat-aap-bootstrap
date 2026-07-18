@@ -32,6 +32,21 @@ The goal is to build a practical lab that includes the core AAP services on one 
 
 This is not a high availability deployment. It is a lab-oriented container growth topology that is useful for learning, demos, configuration-as-code testing, and portfolio projects.
 
+This topology is a good fit when you need a smaller-footprint AAP deployment and do not need platform redundancy.
+
+Common use cases include:
+
+| Use case | Why this topology fits |
+| --- | --- |
+| Learning and hands-on labs | All major AAP components are available on one VM, which keeps the environment easier to understand and reset. |
+| Proof of concept deployments | Teams can validate AAP workflows, content management, EDA, metrics, and integrations before designing a larger production topology. |
+| Demo and enablement environments | A single-VM deployment is practical for demos, instructor-led training, workshops, and internal platform enablement. |
+| Configuration-as-code development | Engineers can test organizations, teams, RBAC, inventories, projects, job templates, execution environments, workflows, and notifications in a realistic platform. |
+| Portfolio and GitHub projects | The topology provides enough platform depth to demonstrate enterprise automation skills without requiring a multi-node lab. |
+| Small non-critical environments | It can support smaller environments where redundancy is not required and the operational tradeoff is understood. |
+
+This topology is not the right target when you need high availability, strict separation of platform services, independent database management, or large-scale production capacity. For those requirements, review Red Hat's enterprise topology and external database guidance.
+
 ## Target Architecture
 
 ![AAP 2.7 containerized architecture](images/aap-27-containerized-architecture.png)
@@ -1459,6 +1474,7 @@ The platform is now ready for the next phase: configuring AAP as code with organ
 
 - [Red Hat Ansible Automation Platform 2.7 documentation](https://docs.redhat.com/en/documentation/red_hat_ansible_automation_platform/)
 - [Red Hat Ansible Automation Platform components reference](https://docs.redhat.com/en/documentation/red_hat_ansible_automation_platform/2.5/html/planning_your_installation/ref-aap-components)
+- [Red Hat AAP 2.7 container growth topology](https://docs.redhat.com/en/documentation/red_hat_ansible_automation_platform/2.7/plan-ref_cont_a_env_a)
 - [Red Hat AAP 2.7 system requirements](https://docs.redhat.com/en/documentation/red_hat_ansible_automation_platform/2.7/install-ref_cont_aap_system_requirements)
 - [Install containerized Ansible Automation Platform](https://docs.redhat.com/en/documentation/red_hat_ansible_automation_platform/2.7/install-proc_installing_containerized_aap)
 - [Install containerized Ansible Automation Platform overview](https://docs.redhat.com/en/documentation/red_hat_ansible_automation_platform/2.7/install-con_aap_containerized_installation_intro)
