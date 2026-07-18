@@ -1,4 +1,4 @@
-# Red Hat Ansible Automation Platform 2.7 All-in-One Installation
+# Red Hat Ansible Automation Platform 2.7 Container Growth Topology Installation
 
 ## Table of Contents
 
@@ -16,7 +16,9 @@
 
 ## Introduction
 
-This guide explains how to install Red Hat Ansible Automation Platform 2.7 as an all-in-one containerized deployment on a single Red Hat Enterprise Linux virtual machine.
+This guide explains how to install Red Hat Ansible Automation Platform 2.7 using the container growth topology on a single Red Hat Enterprise Linux virtual machine.
+
+In Red Hat documentation, this deployment model is called the container growth topology. Because all AAP components run on one VM in this lab, it can also be described as an all-in-one single-VM deployment.
 
 The goal is to build a practical lab that includes the core AAP services on one host:
 
@@ -44,7 +46,7 @@ ansible_connection=local
 
 ## AAP Component Overview
 
-Before installing the platform, it is useful to understand what each component does in this all-in-one deployment.
+Before installing the platform, it is useful to understand what each component does in this single-VM container growth topology.
 
 ### Platform Gateway
 
@@ -159,7 +161,7 @@ automation-metrics-scheduler
 
 ### Local PostgreSQL Database
 
-PostgreSQL is the relational database layer for the platform. In this all-in-one lab, the installer deployed PostgreSQL locally on the same VM.
+PostgreSQL is the relational database layer for the platform. In this single-VM lab, the installer deployed PostgreSQL locally on the same VM.
 
 The local PostgreSQL service stores data for platform components such as:
 
@@ -263,7 +265,7 @@ This lab used:
 hub_seed_collections=false
 ```
 
-The reason was practical: first complete the all-in-one platform installation, verify gateway, controller, hub, EDA, metrics, PostgreSQL, and Redis, then manage automation content as a separate post-install milestone.
+The reason was practical: first complete the container growth topology installation, verify gateway, controller, hub, EDA, metrics, PostgreSQL, and Redis, then manage automation content as a separate post-install milestone.
 
 ## Lab Environment Used
 
@@ -273,7 +275,8 @@ The installation in this guide was completed with the following lab configuratio
 | --- | --- |
 | AAP version | 2.7 |
 | Installer package | `ansible-automation-platform-containerized-setup-2.7-2` |
-| Topology | Container growth / all-in-one |
+| Topology | Container growth topology |
+| Deployment style | All-in-one / single RHEL VM lab |
 | Hostname/FQDN | `aap.lab.example.com` |
 | Static IP | `192.168.34.155` |
 | Operating system | Red Hat Enterprise Linux 10.2 |
@@ -984,7 +987,7 @@ FEATURE_DASHBOARD_COLLECTION_ENABLED=false
 
 | Section | Value used | Explanation |
 | --- | --- | --- |
-| `[automationgateway]` | `aap.lab.example.com` | Installs the platform gateway on the all-in-one VM. The gateway is the main web and API entry point for AAP 2.7. |
+| `[automationgateway]` | `aap.lab.example.com` | Installs the platform gateway on the single VM. The gateway is the main web and API entry point for AAP 2.7. |
 | `[automationcontroller]` | `aap.lab.example.com` | Installs automation controller on the same VM. Controller manages inventories, credentials, projects, job templates, workflows, and job execution. |
 | `[automationhub]` | `aap.lab.example.com` | Installs private automation hub on the same VM. Hub manages automation content such as collections and execution environment content. |
 | `[automationeda]` | `aap.lab.example.com` | Installs Event-Driven Ansible controller on the same VM. EDA handles rulebooks, event sources, and event-driven automation. |
@@ -1005,24 +1008,24 @@ FEATURE_DASHBOARD_COLLECTION_ENABLED=false
 | `registry_password` | `<hiddeen>` | Red Hat registry password or service account token. This must never be committed to Git. |
 | `redis_mode` | `standalone` | Configures Redis in standalone mode. This is appropriate for a single-node lab. The installer also supports `cluster`, which is more relevant to multi-node or enterprise topologies. |
 | `gateway_admin_password` | `<hiddeen>` | Password for the AAP platform gateway admin user. This is the password used when logging into the platform UI as `admin` unless you also customize the admin username. |
-| `gateway_pg_host` | `aap.lab.example.com` | PostgreSQL host used by platform gateway. Because this is all-in-one, gateway connects to PostgreSQL on the same VM. |
+| `gateway_pg_host` | `aap.lab.example.com` | PostgreSQL host used by platform gateway. Because this is a single-VM topology, gateway connects to PostgreSQL on the same VM. |
 | `gateway_pg_password` | `<hiddeen>` | Database password for the platform gateway database user. |
 | `controller_admin_password` | `<hiddeen>` | Admin password for automation controller. In AAP 2.7, users normally enter through the platform gateway, but controller still needs its own service/admin configuration during installation. |
-| `controller_pg_host` | `aap.lab.example.com` | PostgreSQL host used by automation controller. This points to the local VM in the all-in-one build. |
+| `controller_pg_host` | `aap.lab.example.com` | PostgreSQL host used by automation controller. This points to the local VM in this container growth topology. |
 | `controller_pg_password` | `<hiddeen>` | Database password for the automation controller database user. |
 | `controller_percent_memory_capacity` | `0.5` | Limits automation controller memory capacity calculation to 50 percent of detected system memory. The installer accepts values from `0.01` to `1.0`; this lab used `0.5` to leave memory for gateway, hub, EDA, metrics, PostgreSQL, Redis, and the operating system on the same VM. |
 | `hub_admin_password` | `<hiddeen>` | Admin password for private automation hub. |
-| `hub_pg_host` | `aap.lab.example.com` | PostgreSQL host used by automation hub. This points to the local VM in the all-in-one build. |
+| `hub_pg_host` | `aap.lab.example.com` | PostgreSQL host used by automation hub. This points to the local VM in this container growth topology. |
 | `hub_pg_password` | `<hiddeen>` | Database password for the automation hub database user. |
 | `hub_seed_collections` | `false` | Prevents the installer from seeding private automation hub with initial collections during the base install. This keeps the first install faster and smaller. Collections can be synced or uploaded later. |
 | `eda_admin_password` | `<hiddeen>` | Admin password for Event-Driven Ansible controller. |
-| `eda_pg_host` | `aap.lab.example.com` | PostgreSQL host used by Event-Driven Ansible controller. This points to the local VM in the all-in-one build. |
+| `eda_pg_host` | `aap.lab.example.com` | PostgreSQL host used by Event-Driven Ansible controller. This points to the local VM in this container growth topology. |
 | `eda_pg_password` | `<hiddeen>` | Database password for the Event-Driven Ansible controller database user. |
 | `automationmetrics_pg_host` | `aap.lab.example.com` | PostgreSQL host used by Automation Metrics Service for its own database. |
 | `automationmetrics_pg_password` | `<hiddeen>` | Database password for the Automation Metrics Service database user. |
 | `automationmetrics_controller_read_pg_host` | `aap.lab.example.com` | PostgreSQL host for read-only access to the automation controller database. Metrics service needs this when automation controller is deployed so it can read controller data for reporting. |
 | `automationmetrics_controller_read_pg_password` | `<hiddeen>` | Password for the metrics service read-only database access to automation controller data. |
-| `FEATURE_DASHBOARD_COLLECTION_ENABLED` | `false` | Disables the automation dashboard collection feature flag during the initial install. This keeps the first all-in-one deployment focused on base platform health; dashboard collection can be enabled later if needed. |
+| `FEATURE_DASHBOARD_COLLECTION_ENABLED` | `false` | Disables the automation dashboard collection feature flag during the initial install. This keeps the first single-VM deployment focused on base platform health; dashboard collection can be enabled later if needed. |
 
 ### Step 11 - Validate The Inventory
 
@@ -1437,7 +1440,7 @@ For production, use certificates trusted by your organization. For a lab, you ca
 
 ## Summary
 
-By following this guide, you installed Red Hat Ansible Automation Platform 2.7 as an all-in-one containerized lab on Red Hat Enterprise Linux 10.2.
+By following this guide, you installed Red Hat Ansible Automation Platform 2.7 using the container growth topology on Red Hat Enterprise Linux 10.2.
 
 You completed:
 
@@ -1447,7 +1450,7 @@ You completed:
 - Podman and registry access validation
 - AAP 2.7 installer extraction
 - `inventory-growth` backup and configuration
-- all-in-one AAP 2.7 installation
+- container growth topology AAP 2.7 installation
 - browser and container-level validation
 
 The platform is now ready for the next phase: configuring AAP as code with organizations, teams, RBAC, inventories, projects, job templates, execution environments, workflows, notifications, and enterprise integrations.

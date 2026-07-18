@@ -1,6 +1,6 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="2200" height="1500" viewBox="0 0 2200 1500" role="img" aria-labelledby="title desc">
-  <title id="title">Red Hat Ansible Automation Platform 2.7 all-in-one containerized architecture</title>
-  <desc id="desc">Architecture diagram for an all-in-one Red Hat Ansible Automation Platform 2.7 growth topology deployed as rootless Podman containers on a single RHEL 10.2 virtual machine.</desc>
+  <title id="title">Red Hat Ansible Automation Platform 2.7 container growth topology architecture</title>
+  <desc id="desc">Architecture diagram for a Red Hat Ansible Automation Platform 2.7 container growth topology deployed as rootless Podman containers on a single RHEL 10.2 virtual machine.</desc>
   <defs>
     <filter id="softShadow" x="-20%" y="-20%" width="140%" height="140%">
       <feDropShadow dx="0" dy="6" stdDeviation="8" flood-color="#1f2937" flood-opacity="0.14"/>
@@ -55,7 +55,7 @@
   <rect class="header" x="0" y="0" width="2200" height="134"/>
   <rect class="redbar" x="0" y="134" width="2200" height="10"/>
   <text class="title" x="80" y="58">Red Hat Ansible Automation Platform 2.7</text>
-  <text class="subtitle" x="80" y="97">All-in-one containerized growth topology on one RHEL 10.2 VM</text>
+  <text class="subtitle" x="80" y="97">Container growth topology on one RHEL 10.2 VM</text>
   <text class="subtitle" x="1590" y="58">aap.lab.example.com</text>
   <text class="subtitle" x="1590" y="97">192.168.34.155 | non-FIPS lab</text>
 
@@ -160,7 +160,7 @@
   <text class="label" x="1335" y="948">PostgreSQL 15 databases</text>
   <text class="label" x="1335" y="978">Redis tcp and unix services</text>
   <text class="label" x="1335" y="1008">Used by platform components</text>
-  <text class="labelSmall" x="1335" y="1042">Installer-managed for this all-in-one lab</text>
+  <text class="labelSmall" x="1335" y="1042">Installer-managed for this single-VM lab</text>
   <text class="code" x="1335" y="1080">postgresql | redis-tcp | redis-unix</text>
 
   <rect class="box" x="555" y="1168" width="1100" height="125"/>
@@ -235,5 +235,5 @@
   <text class="tagText" x="1092" y="1427">Events</text>
   <text class="labelSmall" x="1198" y="1428">Diagram reflects this lab inventory and observed container runtime after installation.</text>
 
-  <text class="footnote" x="70" y="1465">Reference basis: Red Hat AAP 2.7 containerized installer docs, platform gateway/API docs, metrics service architecture docs, Event-Driven Ansible docs, automation mesh docs, and AAP 2.7 Red Hat blog. Adapted for this all-in-one lab.</text>
+  <text class="footnote" x="70" y="1465">Reference basis: Red Hat AAP 2.7 containerized installer docs, platform gateway/API docs, metrics service architecture docs, Event-Driven Ansible docs, automation mesh docs, and AAP 2.7 Red Hat blog. Adapted for this single-VM container growth topology lab.</text>
 </svg>
