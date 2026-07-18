@@ -4,6 +4,7 @@
 
 - [Introduction](#introduction)
 - [Target Architecture](#target-architecture)
+- [AAP Component Overview](#aap-component-overview)
 - [System Requirements](#system-requirements)
 - [Understanding hub_seed_collections](#understanding-hub_seed_collections)
 - [Lab Environment Used](#lab-environment-used)
@@ -33,10 +34,174 @@ This is not a high availability deployment. It is a lab-oriented container growt
 
 ![AAP 2.7 containerized architecture](images/aap-27-containerized-architecture.png)
 
+The editable source for this diagram is available at [images/aap-27-containerized-architecture.svg](images/aap-27-containerized-architecture.svg).
+
 The deployment uses the AAP 2.7 containerized installer and the `inventory-growth` inventory file. The installer is executed locally on the same VM where AAP is installed, so the inventory uses:
 
 ```ini
 ansible_connection=local
+```
+
+## AAP Component Overview
+
+Before installing the platform, it is useful to understand what each component does in this all-in-one deployment.
+
+### Platform Gateway
+
+Platform gateway is the front door for Ansible Automation Platform. In AAP 2.7, users and API clients should enter the platform through the gateway instead of connecting directly to each individual component.
+
+In this lab, the gateway provides:
+
+- the main web entry point at `https://aap.lab.example.com`
+- centralized authentication and authorization
+- platform-level RBAC
+- routing to controller, hub, Event-Driven Ansible, and metrics APIs
+- the unified platform user experience
+
+The related containers are:
+
+```text
+automation-gateway
+automation-gateway-proxy
+```
+
+### Automation Controller
+
+Automation controller is the execution control plane. This is where you define the objects required to run automation at scale.
+
+Controller manages:
+
+- inventories and inventory sources
+- credentials
+- projects linked to source control
+- job templates
+- workflow job templates
+- schedules, surveys, notifications, and job history
+- execution capacity through receptor and execution nodes
+
+In this lab, controller runs as separate web, task, and rsyslog containers:
+
+```text
+automation-controller-web
+automation-controller-task
+automation-controller-rsyslog
+```
+
+### Private Automation Hub
+
+Private automation hub is the internal content repository for automation teams. It gives you a place to store, synchronize, publish, and govern automation content.
+
+Private automation hub is commonly used for:
+
+- certified Ansible Content Collections
+- validated or internally developed collections
+- execution environment images
+- content synchronization from Red Hat automation hub, Ansible Galaxy, or other registries
+- content promotion across development, test, and production environments
+
+In this lab, `hub_seed_collections=false` was used, so hub was installed without seeding initial collections during the base installation. Collections can be synchronized or uploaded later.
+
+The related containers are:
+
+```text
+automation-hub-api
+automation-hub-content
+automation-hub-web
+automation-hub-worker-1
+automation-hub-worker-2
+```
+
+### Event-Driven Ansible Controller
+
+Event-Driven Ansible controller handles automation decisions based on events. Instead of waiting for an operator to start a job manually, EDA can listen for events, evaluate rulebooks, and trigger automation when defined conditions are met.
+
+EDA is useful for:
+
+- webhook-driven automation
+- monitoring and observability events
+- ITSM and ticketing events
+- security and compliance signals
+- network and cloud event streams
+- self-healing operations
+
+EDA can trigger automation controller jobs or workflows when a rulebook condition matches.
+
+The related containers are:
+
+```text
+automation-eda-api
+automation-eda-daphne
+automation-eda-web
+automation-eda-worker-1
+automation-eda-worker-2
+automation-eda-activation-worker-1
+automation-eda-activation-worker-2
+```
+
+### Automation Metrics Service
+
+Automation Metrics Service is part of AAP 2.7 and is enabled during the containerized installation. It collects anonymized usage and performance data from automation controller.
+
+In this lab, metrics service:
+
+- has its own PostgreSQL database
+- has read-only access to the automation controller database
+- runs as containerized workloads managed by the installer
+- was installed with dashboard collection disabled by setting `FEATURE_DASHBOARD_COLLECTION_ENABLED=false`
+
+The related containers are:
+
+```text
+automation-metrics-web
+automation-metrics-tasks
+automation-metrics-scheduler
+```
+
+### Local PostgreSQL Database
+
+PostgreSQL is the relational database layer for the platform. In this all-in-one lab, the installer deployed PostgreSQL locally on the same VM.
+
+The local PostgreSQL service stores data for platform components such as:
+
+- platform gateway
+- automation controller
+- private automation hub
+- Event-Driven Ansible controller
+- Automation Metrics Service
+
+The related container is:
+
+```text
+postgresql
+```
+
+The related volume is:
+
+```text
+postgresql
+```
+
+For production, evaluate Red Hat's guidance for supported external database designs, backup, restore, performance, and high availability.
+
+### Redis
+
+Redis provides in-memory caching and queueing services used by AAP components. In this lab, Redis was configured in standalone mode because the deployment is a single-node lab.
+
+Redis supports platform behavior such as:
+
+- cache data
+- session-related data
+- event queueing
+- component communication patterns that benefit from fast in-memory storage
+
+The related containers and volumes are:
+
+```text
+redis-unix
+redis-tcp
+redis_data_unix
+redis_data_tcp
+redis_run
 ```
 
 ## System Requirements
@@ -149,7 +314,11 @@ Set the hostname:
 [rajat@aap ~]$ sudo hostnamectl set-hostname aap.lab.example.com
 ```
 
-This command does not return output when it completes successfully.
+Result:
+
+```text
+# no output
+```
 
 Reboot if needed:
 
@@ -157,49 +326,109 @@ Reboot if needed:
 [rajat@aap ~]$ sudo reboot
 ```
 
+Result:
+
+```text
+# the SSH session disconnects while the VM reboots
+```
+
 ### Step 2 - Create A Sudo User
 
 This lab used a non-root user named `rajat`.
 
-Verify the user and group membership:
+Verify the user:
 
 ```console
 [rajat@aap ~]$ id rajat
-[rajat@aap ~]$ groups rajat
 ```
 
-Output from this lab:
+Example output:
 
 ```text
 uid=1000(rajat) gid=1000(rajat) groups=1000(rajat),10(wheel),190(systemd-journal)
+```
+
+Verify group membership:
+
+```console
+[rajat@aap ~]$ groups rajat
+```
+
+Example output:
+
+```text
 rajat : rajat wheel systemd-journal
 ```
 
-The user should be part of the `wheel` group:
+> [!NOTE]
+> The installation user must be part of the `wheel` group, or must otherwise have sudo access.
 
-```text
-rajat : rajat wheel
-```
+> [!NOTE]
+> If the user is not part of the `wheel` group, run the following command and then log out and log back in.
 
-If needed, add the user to `wheel`:
+Add the user to `wheel` only if required:
 
 ```console
 [rajat@aap ~]$ sudo usermod -aG wheel rajat
 ```
 
-This command does not return output when it completes successfully.
+Result:
 
-Log out and log back in after changing group membership.
+```text
+# no output
+```
 
 ### Step 3 - Register The RHEL System
 
-Register the VM to Red Hat Subscription Management. In this lab, `rhc status` was used for validation:
+Register the VM to Red Hat Subscription Management:
+
+```console
+[rajat@aap ~]$ sudo rhc connect
+```
+
+Example successful result:
+
+```text
+Connecting aap.lab.example.com to Red Hat.
+This might take a few seconds.
+
+[OK] Connected to Red Hat Subscription Management
+[OK] Connected to Red Hat Lightspeed
+[OK] Activated the Remote Host Configuration daemon
+
+Successfully connected to Red Hat!
+
+Manage your connected systems: https://red.ht/connector
+```
+
+If your organization uses activation keys, use the activation key and organization ID form:
+
+```console
+[rajat@aap ~]$ sudo rhc connect --activation-key=<activation_key_name> --organization=<organization_id>
+```
+
+Example successful result:
+
+```text
+Connecting aap.lab.example.com to Red Hat.
+This might take a few seconds.
+
+[OK] Connected to Red Hat Subscription Management
+[OK] Connected to Red Hat Lightspeed
+[OK] Activated the Remote Host Configuration daemon
+
+Successfully connected to Red Hat!
+
+Manage your connected systems: https://red.ht/connector
+```
+
+Validate the connection:
 
 ```console
 [rajat@aap ~]$ sudo rhc status
 ```
 
-Output from this lab:
+Example output:
 
 ```text
 Connection status for aap.lab.example.com:
@@ -212,11 +441,11 @@ Connection status for aap.lab.example.com:
 Manage your connected systems: https://red.ht/connector
 ```
 
-Expected status:
+Confirm that the system is connected to:
 
-- connected to Red Hat Subscription Management
-- Red Hat repository file generated
-- connected to Red Hat Lightspeed or Insights
+- Red Hat Subscription Management
+- Red Hat content repositories
+- Red Hat Lightspeed or Insights
 
 Update the system:
 
@@ -224,7 +453,7 @@ Update the system:
 [rajat@aap ~]$ sudo dnf update -y
 ```
 
-Output from this lab when the system was already current:
+Example output when the system is already current:
 
 ```text
 Updating Subscription Management repositories.
@@ -239,7 +468,7 @@ Verify Podman:
 [rajat@aap ~]$ podman --version
 ```
 
-The lab showed:
+Example output:
 
 ```text
 podman version 5.8.2
@@ -247,18 +476,15 @@ podman version 5.8.2
 
 ### Step 4 - Validate Hostname, IP, And Time
 
-Run:
+Validate the hostname:
 
 ```console
 [rajat@aap ~]$ hostnamectl
-[rajat@aap ~]$ ip addr
-[rajat@aap ~]$ timedatectl
 ```
 
-Output from this lab:
+Example output:
 
 ```text
-$ hostnamectl
  Static hostname: aap.lab.example.com
        Icon name: computer-vm
          Chassis: vm
@@ -275,8 +501,17 @@ Operating System: Red Hat Enterprise Linux 10.2 (Coughlan)
 Firmware Version: VMW201.00V.25275966.BA64.2603102050
    Firmware Date: Tue 2026-03-10
     Firmware Age: 4month 1w 2d
+```
 
-$ ip addr
+Validate the IP address:
+
+```console
+[rajat@aap ~]$ ip addr
+```
+
+Example output:
+
+```text
 1: lo: <LOOPBACK,UP,LOWER_UP> mtu 65536 qdisc noqueue state UNKNOWN group default qlen 1000
     link/loopback 00:00:00:00:00:00 brd 00:00:00:00:00:00
     inet 127.0.0.1/8 scope host lo
@@ -290,8 +525,17 @@ $ ip addr
        valid_lft forever preferred_lft forever
     inet6 fe80::20c:29ff:febe:3bc2/64 scope link noprefixroute
        valid_lft forever preferred_lft forever
+```
 
-$ timedatectl
+Validate time synchronization:
+
+```console
+[rajat@aap ~]$ timedatectl
+```
+
+Example output:
+
+```text
                Local time: Sat 2026-07-18 19:17:37 EDT
            Universal time: Sat 2026-07-18 23:17:37 UTC
                  RTC time: Sat 2026-07-18 23:17:38
@@ -311,16 +555,27 @@ Edit `/etc/hosts`:
 [rajat@aap ~]$ sudo vi /etc/hosts
 ```
 
+Result:
+
+```text
+# no output after saving and exiting the editor
+```
+
 Add:
 
 ```text
 192.168.34.155 aap.lab.example.com aap
 ```
 
-Output from this lab:
+Verify the file:
+
+```console
+[rajat@aap ~]$ cat /etc/hosts
+```
+
+Example output:
 
 ```text
-$ cat /etc/hosts
 # Loopback entries; do not change.
 # For historical reasons, localhost precedes localhost.localdomain:
 127.0.0.1   localhost localhost.localdomain localhost4 localhost4.localdomain4
@@ -331,20 +586,29 @@ $ cat /etc/hosts
 192.168.34.155 aap.lab.example.com aap
 ```
 
-Validate:
+Validate basic name resolution:
 
 ```console
 [rajat@aap ~]$ getent hosts aap.lab.example.com
+```
+
+Example output:
+
+```text
+fe80::20c:29ff:febe:3bc2 aap.lab.example.com
+```
+
+In this lab, `getent hosts` returned an IPv6 link-local address through `myhostname`, so the IPv4 lookup was also validated.
+
+Validate IPv4 name resolution:
+
+```console
 [rajat@aap ~]$ getent ahostsv4 aap.lab.example.com
 ```
 
-In this lab, `getent hosts` returned an IPv6 link-local address through `myhostname`, but IPv4 lookup worked correctly:
+Example output:
 
 ```text
-$ getent hosts aap.lab.example.com
-fe80::20c:29ff:febe:3bc2 aap.lab.example.com
-
-$ getent ahostsv4 aap.lab.example.com
 192.168.34.155  STREAM aap.lab.example.com
 192.168.34.155  DGRAM
 192.168.34.155  RAW
@@ -356,27 +620,25 @@ Confirm host lookup order:
 [rajat@aap ~]$ grep '^hosts:' /etc/nsswitch.conf
 ```
 
-Expected:
+Example output:
 
 ```text
-$ grep '^hosts:' /etc/nsswitch.conf
 hosts:      files  dns myhostname
 ```
 
+Confirm that `files` appears before `dns` so `/etc/hosts` is checked before DNS.
+
 ### Step 6 - Validate Workstation Access
 
-From your workstation, confirm that the VM is reachable:
+From your workstation, confirm that the VM is reachable by IP address:
 
 ```console
-$ ping 192.168.34.155
-$ ping aap.lab.example.com
-$ ssh rajat@aap.lab.example.com
+$ ping -c 2 192.168.34.155
 ```
 
-Output from this lab workstation:
+Example output:
 
 ```text
-$ ping -c 2 192.168.34.155
 PING 192.168.34.155 (192.168.34.155): 56 data bytes
 64 bytes from 192.168.34.155: icmp_seq=0 ttl=64 time=0.431 ms
 64 bytes from 192.168.34.155: icmp_seq=1 ttl=64 time=1.158 ms
@@ -384,8 +646,17 @@ PING 192.168.34.155 (192.168.34.155): 56 data bytes
 --- 192.168.34.155 ping statistics ---
 2 packets transmitted, 2 packets received, 0.0% packet loss
 round-trip min/avg/max/stddev = 0.431/0.794/1.158/0.363 ms
+```
 
+Confirm that the VM is reachable by FQDN:
+
+```console
 $ ping -c 2 aap.lab.example.com
+```
+
+Example output:
+
+```text
 PING aap.lab.example.com (192.168.34.155): 56 data bytes
 64 bytes from 192.168.34.155: icmp_seq=0 ttl=64 time=0.525 ms
 64 bytes from 192.168.34.155: icmp_seq=1 ttl=64 time=0.848 ms
@@ -395,31 +666,50 @@ PING aap.lab.example.com (192.168.34.155): 56 data bytes
 round-trip min/avg/max/stddev = 0.525/0.686/0.848/0.161 ms
 ```
 
+Confirm SSH access:
+
+```console
+$ ssh rajat@aap.lab.example.com
+```
+
+Example output after successful login:
+
+```text
+[rajat@aap ~]$
+```
+
 If your workstation cannot resolve `aap.lab.example.com`, add the same entry to your local DNS or workstation hosts file.
 
 ### Step 7 - Validate Registry DNS And Login
 
 The online containerized installer pulls images from `registry.redhat.io`.
 
-Run on the VM:
+Validate registry DNS from the VM:
 
 ```console
 [rajat@aap ~]$ getent hosts registry.redhat.io
-[rajat@aap ~]$ curl -I https://registry.redhat.io/v2/
 ```
 
-Output from this lab:
+Example output:
 
 ```text
-$ getent hosts registry.redhat.io
 2600:1f18:d77:9000:b0b1:dd53:cab5:bbc3 registry-proxy-134442355.us-east-1.elb.amazonaws.com registry.redhat.io
 2600:1f18:d77:9001:21a:aeb5:d63e:eb0f registry-proxy-134442355.us-east-1.elb.amazonaws.com registry.redhat.io
 2600:1f18:d77:9001:ca6:8904:2a40:eabf registry-proxy-134442355.us-east-1.elb.amazonaws.com registry.redhat.io
 2600:1f18:d77:9002:560d:db51:6200:3bd6 registry-proxy-134442355.us-east-1.elb.amazonaws.com registry.redhat.io
 2600:1f18:d77:9002:a26e:8165:eae1:8ae5 registry-proxy-134442355.us-east-1.elb.amazonaws.com registry.redhat.io
 2600:1f18:d77:9000:fe19:bebe:cb94:9f0c registry-proxy-134442355.us-east-1.elb.amazonaws.com registry.redhat.io
+```
 
-$ curl -I -sS https://registry.redhat.io/v2/
+Validate registry HTTPS connectivity:
+
+```console
+[rajat@aap ~]$ curl -I -sS https://registry.redhat.io/v2/
+```
+
+Example output:
+
+```text
 HTTP/2 401
 date: Sat, 18 Jul 2026 23:17:38 GMT
 content-type: application/json
@@ -436,13 +726,15 @@ Log in to the registry:
 [rajat@aap ~]$ podman login registry.redhat.io
 ```
 
-Expected result:
+Example successful result:
 
 ```text
+Username: <registry_username>
+Password:
 Login Succeeded!
 ```
 
-### Step 9 - Download And Extract The AAP Installer
+### Step 8 - Download And Extract The AAP Installer
 
 Download the AAP 2.7 containerized setup package from the Red Hat Customer Portal.
 
@@ -457,23 +749,47 @@ If you have the tar file, extract it:
 
 ```console
 [rajat@aap ~]$ cd /home/rajat
+```
+
+Result:
+
+```text
+# no output
+```
+
+Extract the tar file:
+
+```console
 [rajat@aap ~]$ tar -xf ansible-automation-platform-containerized-setup-2.7-2.tar
+```
+
+Result:
+
+```text
+# no output
+```
+
+Change into the extracted installer directory:
+
+```console
 [rajat@aap ~]$ cd ansible-automation-platform-containerized-setup-2.7-2
 ```
 
-The `cd` and `tar -xf` commands do not return output when they complete successfully. Verify extraction by inspecting the installer directory.
+Result:
+
+```text
+# no output
+```
 
 Inspect the installer directory:
 
 ```console
 [rajat@aap ansible-automation-platform-containerized-setup-2.7-2]$ ls -la
-[rajat@aap ansible-automation-platform-containerized-setup-2.7-2]$ ls -la inventory*
 ```
 
-Output from this lab:
+Example output:
 
 ```text
-$ ls -la /home/rajat/ansible-automation-platform-containerized-setup-2.7-2
 total 472
 drwxr-xr-x.  3 rajat rajat    158 Jul 14 23:48 .
 drwx------. 18 rajat rajat   4096 Jul 14 23:49 ..
@@ -484,14 +800,23 @@ drwxr-xr-x.  3 rajat rajat     33 Jun 18 11:52 collections
 -rw-r--r--.  1 rajat rajat   3429 Jul 14 23:48 inventory-growth
 -rw-r--r--.  1 rajat rajat   3443 Jun 18 11:52 inventory-growth.original
 -rw-r--r--.  1 rajat rajat  74768 Jun 18 11:52 README.md
+```
 
-$ ls -la inventory*
+Inspect the inventory files:
+
+```console
+[rajat@aap ansible-automation-platform-containerized-setup-2.7-2]$ ls -la inventory*
+```
+
+Example output:
+
+```text
 -rw-r--r--. 1 rajat rajat 3662 Jun 18 11:52 inventory
 -rw-r--r--. 1 rajat rajat 3429 Jul 14 23:48 inventory-growth
 -rw-r--r--. 1 rajat rajat 3443 Jun 18 11:52 inventory-growth.original
 ```
 
-### Step 10 - Back Up The Original Inventory
+### Step 9 - Back Up The Original Inventory
 
 The installer includes inventory examples. This lab used `inventory-growth`.
 
@@ -499,20 +824,52 @@ Back up the original file:
 
 ```console
 [rajat@aap ansible-automation-platform-containerized-setup-2.7-2]$ cp -p inventory-growth inventory-growth.original
+```
+
+Result:
+
+```text
+# no output
+```
+
+Make the backup read-only:
+
+```console
 [rajat@aap ansible-automation-platform-containerized-setup-2.7-2]$ chmod 400 inventory-growth.original
+```
+
+Result:
+
+```text
+# no output
+```
+
+Make the working inventory writable by the owner:
+
+```console
 [rajat@aap ansible-automation-platform-containerized-setup-2.7-2]$ chmod 600 inventory-growth
 ```
 
-These commands do not return output when they complete successfully.
+Result:
+
+```text
+# no output
+```
 
 This gives you a clean reference copy if the install fails.
 
-### Step 11 - Configure `inventory-growth`
+### Step 10 - Configure `inventory-growth`
 
 Edit `inventory-growth` directly:
 
 ```console
 [rajat@aap ansible-automation-platform-containerized-setup-2.7-2]$ vi inventory-growth
+```
+
+Result:
+
+```text
+# no output after saving and exiting the editor
 ```
 
 The sanitized inventory used for this lab is shown below. The real VM-side inventory used private values, but all password values are hidden here with `<hiddeen>`.
@@ -667,16 +1024,15 @@ FEATURE_DASHBOARD_COLLECTION_ENABLED=false
 | `automationmetrics_controller_read_pg_password` | `<hiddeen>` | Password for the metrics service read-only database access to automation controller data. |
 | `FEATURE_DASHBOARD_COLLECTION_ENABLED` | `false` | Disables the automation dashboard collection feature flag during the initial install. This keeps the first all-in-one deployment focused on base platform health; dashboard collection can be enabled later if needed. |
 
-### Step 12 - Validate The Inventory
+### Step 11 - Validate The Inventory
 
-Run:
+Generate the inventory JSON:
 
 ```console
 [rajat@aap ansible-automation-platform-containerized-setup-2.7-2]$ ansible-inventory -i inventory-growth --list
-[rajat@aap ansible-automation-platform-containerized-setup-2.7-2]$ ansible-inventory -i inventory-growth --graph
 ```
 
-Sanitized output from `ansible-inventory -i inventory-growth --list`:
+Example sanitized output:
 
 ```json
 {
@@ -755,7 +1111,13 @@ Sanitized output from `ansible-inventory -i inventory-growth --list`:
 }
 ```
 
-Output from `ansible-inventory -i inventory-growth --graph`:
+Generate the inventory graph:
+
+```console
+[rajat@aap ansible-automation-platform-containerized-setup-2.7-2]$ ansible-inventory -i inventory-growth --graph
+```
+
+Example output:
 
 ```text
 @all:
@@ -782,13 +1144,13 @@ Check for unresolved placeholders, example domains, and hostname typos:
 
 This command should return no output in your real VM inventory. If it returns active lines, fix them before running the installer.
 
-Output from this lab:
+Example successful result:
 
 ```text
 # no output
 ```
 
-### Step 13 - Run The Installer
+### Step 12 - Run The Installer
 
 From the extracted installer directory:
 
@@ -798,13 +1160,25 @@ From the extracted installer directory:
 
 Use `-K` because the `rajat` user uses sudo privilege escalation.
 
+Result:
+
+```text
+# Ansible streams task output during the installation.
+# A successful run ends with a play recap where failed=0 and unreachable=0.
+```
+
 If you need more detail during troubleshooting:
 
 ```console
 [rajat@aap ansible-automation-platform-containerized-setup-2.7-2]$ ansible-playbook -i inventory-growth -K -v ansible.containerized_installer.install
 ```
 
-Wait for the playbook to complete successfully.
+Result:
+
+```text
+# The same installer runs with more verbose task output.
+# Use this only when troubleshooting or collecting additional detail.
+```
 
 ## Post Installation Validation
 
@@ -827,24 +1201,15 @@ After login, the AAP overview dashboard should load.
 
 ### Validate Containers
 
-Run:
-
-```console
-[rajat@aap ansible-automation-platform-containerized-setup-2.7-2]$ podman ps
-[rajat@aap ansible-automation-platform-containerized-setup-2.7-2]$ podman pod ps
-[rajat@aap ansible-automation-platform-containerized-setup-2.7-2]$ podman volume ls
-```
-
-Optional formatted view:
+List running AAP containers:
 
 ```console
 [rajat@aap ansible-automation-platform-containerized-setup-2.7-2]$ podman ps --format 'table {{.Names}}\t{{.Status}}\t{{.Ports}}'
 ```
 
-Output from this lab:
+Example output:
 
 ```text
-$ podman ps --format 'table {{.Names}}\t{{.Status}}\t{{.Ports}}'
 NAMES                               STATUS      PORTS
 postgresql                          Up 3 days   5432/tcp
 redis-unix                          Up 3 days   6379/tcp
@@ -870,11 +1235,31 @@ automation-hub-worker-2             Up 3 days
 automation-metrics-web              Up 3 days
 automation-metrics-tasks            Up 3 days
 automation-metrics-scheduler        Up 3 days
+```
 
-$ podman pod ps
+Check for Podman pods:
+
+```console
+[rajat@aap ansible-automation-platform-containerized-setup-2.7-2]$ podman pod ps
+```
+
+Example output:
+
+```text
 POD ID      NAME        STATUS      CREATED     INFRA ID    # OF CONTAINERS
+```
 
-$ podman volume ls
+In this lab, the containerized installer created standalone containers and no Podman pods.
+
+List persistent Podman volumes:
+
+```console
+[rajat@aap ansible-automation-platform-containerized-setup-2.7-2]$ podman volume ls
+```
+
+Example output:
+
+```text
 DRIVER      VOLUME NAME
 local       postgresql
 local       redis_data_unix
@@ -956,16 +1341,76 @@ Validate:
 
 ```console
 [rajat@aap ~]$ getent hosts registry.redhat.io
-[rajat@aap ~]$ curl -I https://registry.redhat.io/v2/
 ```
 
-Then adjust NetworkManager DNS if required:
+Example healthy result:
+
+```text
+# one or more records are returned for registry.redhat.io
+```
+
+Validate HTTPS connectivity:
 
 ```console
-[rajat@aap ~]$ CON=$(nmcli -t -f NAME,DEVICE connection show --active | awk -F: '$2=="enp2s0"{print $1; exit}')
-[rajat@aap ~]$ sudo nmcli connection modify "$CON" ipv4.ignore-auto-dns yes
-[rajat@aap ~]$ sudo nmcli connection modify "$CON" ipv4.dns "1.1.1.1 8.8.8.8"
-[rajat@aap ~]$ sudo nmcli connection up "$CON"
+[rajat@aap ~]$ curl -I -sS https://registry.redhat.io/v2/
+```
+
+Example healthy result:
+
+```text
+HTTP/2 401
+```
+
+An HTTP `401 Unauthorized` response confirms that DNS, routing, and TLS are working before authentication.
+
+Find the active NetworkManager connection:
+
+```console
+[rajat@aap ~]$ nmcli -t -f NAME,DEVICE connection show --active
+```
+
+Example output:
+
+```text
+enp2s0:enp2s0
+```
+
+If DNS must be adjusted, replace `<connection_name>` with the connection name from the previous output.
+
+Tell NetworkManager to ignore DNS from DHCP:
+
+```console
+[rajat@aap ~]$ sudo nmcli connection modify "<connection_name>" ipv4.ignore-auto-dns yes
+```
+
+Result:
+
+```text
+# no output
+```
+
+Set public DNS resolvers:
+
+```console
+[rajat@aap ~]$ sudo nmcli connection modify "<connection_name>" ipv4.dns "1.1.1.1 8.8.8.8"
+```
+
+Result:
+
+```text
+# no output
+```
+
+Reactivate the connection:
+
+```console
+[rajat@aap ~]$ sudo nmcli connection up "<connection_name>"
+```
+
+Example output:
+
+```text
+Connection successfully activated
 ```
 
 ### Hostname Typo
@@ -1010,6 +1455,16 @@ The platform is now ready for the next phase: configuring AAP as code with organ
 ## References
 
 - [Red Hat Ansible Automation Platform 2.7 documentation](https://docs.redhat.com/en/documentation/red_hat_ansible_automation_platform/)
+- [Red Hat Ansible Automation Platform components reference](https://docs.redhat.com/en/documentation/red_hat_ansible_automation_platform/2.5/html/planning_your_installation/ref-aap-components)
 - [Red Hat AAP 2.7 system requirements](https://docs.redhat.com/en/documentation/red_hat_ansible_automation_platform/2.7/install-ref_cont_aap_system_requirements)
 - [Install containerized Ansible Automation Platform](https://docs.redhat.com/en/documentation/red_hat_ansible_automation_platform/2.7/install-proc_installing_containerized_aap)
-- [Install metrics service with containerized installer](https://docs.redhat.com/en/documentation/red_hat_ansible_automation_platform/2.7/install-task_install_metrics_service_with_containerized_installer)
+- [Install containerized Ansible Automation Platform overview](https://docs.redhat.com/en/documentation/red_hat_ansible_automation_platform/2.7/install-con_aap_containerized_installation_intro)
+- [Register RHEL systems with `rhc`](https://docs.redhat.com/en/documentation/subscription_central/1-latest/html/getting_started_with_rhel_system_registration/con-basic-reg-rhel-cli)
+- [API changes in Ansible Automation Platform 2.7](https://docs.redhat.com/en/documentation/red_hat_ansible_automation_platform/2.7/upgrade-con_upgrade_api_changes_27)
+- [Understand metrics service architecture](https://docs.redhat.com/en/documentation/red_hat_ansible_automation_platform/2.7/install-con_understand_metrics_service_architecture)
+- [Install metrics service with the containerized installer](https://docs.redhat.com/en/documentation/red_hat_ansible_automation_platform/2.7/install-task_install_metrics_service_with_containerized_installer)
+- [Trigger automation from events with Event-Driven Ansible](https://docs.redhat.com/en/documentation/red_hat_ansible_automation_platform/2.7/administer-assembly_eda_user_guide_overview)
+- [Sync automation content from remote repositories](https://docs.redhat.com/en/documentation/red_hat_ansible_automation_platform/2.7/administer-configure_remote_repositories_to_sync_automation_content_)
+- [Red Hat Ansible Automation Platform automation mesh](https://www.redhat.com/en/technologies/management/ansible/automation-mesh)
+- [Get ready for Ansible Automation Platform 2.7](https://developers.redhat.com/articles/2026/06/19/get-ready-ansible-automation-platform-2-7)
+- [What's New in Ansible Automation Platform 2.7](https://www.redhat.com/en/blog/whats-new-ansible-automation-platform-2-7)
