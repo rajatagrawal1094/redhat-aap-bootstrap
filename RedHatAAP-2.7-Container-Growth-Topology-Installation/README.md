@@ -2,26 +2,37 @@
 
 ## Table of Contents
 
-- [Introduction](#introduction)
 - [Executive Summary](#executive-summary)
-- [Target Architecture](#target-architecture)
+- [Introduction](#introduction)
+- [When To Use This Topology](#when-to-use-this-topology)
 - [Architecture Decision And Design Rationale](#architecture-decision-and-design-rationale)
+- [Target Architecture](#target-architecture)
+- [AAP Component Overview](#aap-component-overview)
 - [Assumptions, Constraints, And Non-Goals](#assumptions-constraints-and-non-goals)
 - [Risk And Tradeoff Matrix](#risk-and-tradeoff-matrix)
-- [AAP Component Overview](#aap-component-overview)
 - [System Requirements](#system-requirements)
-- [Understanding hub_seed_collections](#understanding-hub_seed_collections)
 - [Lab Environment Used](#lab-environment-used)
+- [Understanding hub_seed_collections](#understanding-hub_seed_collections)
 - [Installation Steps](#installation-steps)
-- [Post Installation Validation](#post-installation-validation)
 - [Validation Matrix](#validation-matrix)
+- [Post Installation Validation](#post-installation-validation)
 - [Production Readiness Considerations](#production-readiness-considerations)
 - [Post-Install Roadmap](#post-install-roadmap)
 - [Enterprise Integration Opportunities](#enterprise-integration-opportunities)
 - [Troubleshooting Notes](#troubleshooting-notes)
-- [Client-Facing Conclusion](#client-facing-conclusion)
 - [Summary](#summary)
+- [Client-Facing Conclusion](#client-facing-conclusion)
 - [References](#references)
+
+## Executive Summary
+
+This lab builds a complete Red Hat Ansible Automation Platform 2.7 environment using the container growth topology. The design places platform gateway, automation controller, private automation hub, Event-Driven Ansible controller, Automation Metrics Service, PostgreSQL, and Redis on one RHEL 10.2 virtual machine.
+
+From a solution architecture perspective, this topology is useful when the goal is speed, clarity, and functional validation rather than high availability. It gives architects, consultants, and platform teams a practical way to demonstrate the AAP operating model, validate integration patterns, and prepare a customer conversation around automation governance.
+
+The design intentionally accepts a single-VM failure domain. That tradeoff is reasonable for labs, proofs of concept, demos, workshops, and small non-critical environments, but it should not be treated as a final enterprise production design without additional work.
+
+The outcome of this build is a working platform baseline that can evolve into a configuration-as-code project for organizations, teams, RBAC, inventories, credentials, projects, job templates, workflows, execution environments, notifications, content synchronization, and event-driven automation.
 
 ## Introduction
 
@@ -41,6 +52,8 @@ The goal is to build a practical lab that includes the core AAP services on one 
 
 This is not a high availability deployment. It is a lab-oriented container growth topology that is useful for learning, demos, configuration-as-code testing, and portfolio projects.
 
+## When To Use This Topology
+
 This topology is a good fit when you need a smaller-footprint AAP deployment and do not need platform redundancy.
 
 Common use cases include:
@@ -55,28 +68,6 @@ Common use cases include:
 | Small non-critical environments | It can support smaller environments where redundancy is not required and the operational tradeoff is understood. |
 
 This topology is not the right target when you need high availability, strict separation of platform services, independent database management, or large-scale production capacity. For those requirements, review Red Hat's enterprise topology and external database guidance.
-
-## Executive Summary
-
-This lab builds a complete Red Hat Ansible Automation Platform 2.7 environment using the container growth topology. The design places platform gateway, automation controller, private automation hub, Event-Driven Ansible controller, Automation Metrics Service, PostgreSQL, and Redis on one RHEL 10.2 virtual machine.
-
-From a solution architecture perspective, this topology is useful when the goal is speed, clarity, and functional validation rather than high availability. It gives architects, consultants, and platform teams a practical way to demonstrate the AAP operating model, validate integration patterns, and prepare a customer conversation around automation governance.
-
-The design intentionally accepts a single-VM failure domain. That tradeoff is reasonable for labs, proofs of concept, demos, workshops, and small non-critical environments, but it should not be treated as a final enterprise production design without additional work.
-
-The outcome of this build is a working platform baseline that can evolve into a configuration-as-code project for organizations, teams, RBAC, inventories, credentials, projects, job templates, workflows, execution environments, notifications, content synchronization, and event-driven automation.
-
-## Target Architecture
-
-![AAP 2.7 containerized architecture](images/aap-27-containerized-architecture.png)
-
-The editable source for this diagram is available at [images/aap-27-containerized-architecture.svg](images/aap-27-containerized-architecture.svg).
-
-The deployment uses the AAP 2.7 containerized installer and the `inventory-growth` inventory file. The installer is executed locally on the same VM where AAP is installed, so the inventory uses:
-
-```ini
-ansible_connection=local
-```
 
 ## Architecture Decision And Design Rationale
 
@@ -105,33 +96,17 @@ The Operator-based topologies are intended for Red Hat OpenShift Container Platf
 
 An external database gives teams more control over database lifecycle, backups, performance, and reuse. For this first build, local PostgreSQL keeps the installation focused on platform bootstrap. A production design should revisit database placement, backup ownership, restore testing, and performance requirements.
 
-## Assumptions, Constraints, And Non-Goals
+## Target Architecture
 
-| Category | Item | Detail |
-| --- | --- | --- |
-| Assumption | Red Hat subscriptions are available | The VM has access to RHEL content and the AAP installer/images. |
-| Assumption | DNS and host resolution are controlled | The lab uses `aap.lab.example.com` with static IP `192.168.34.155`. |
-| Assumption | Installer user has sudo access | The `rajat` user is part of the `wheel` group. |
-| Constraint | Single VM | All platform services share the same compute, storage, network, and failure domain. |
-| Constraint | Local PostgreSQL | Database lifecycle is tied to the AAP VM in this lab. |
-| Constraint | Standalone Redis | Redis is not deployed as a highly available clustered service. |
-| Constraint | Non-FIPS | This lab is not designed for FIPS-regulated environments. |
-| Constraint | Lab certificate posture | Browser certificate warnings can occur when installer-generated certificates are used. |
-| Non-goal | High availability | This blog does not build a redundant platform. |
-| Non-goal | Production hardening | This blog does not fully cover SSO, backup automation, monitoring, DR, certificate lifecycle, or network segmentation. |
-| Non-goal | Multi-site architecture | This blog does not design distributed automation mesh or multi-region resiliency. |
+![AAP 2.7 containerized architecture](images/aap-27-containerized-architecture.png)
 
-## Risk And Tradeoff Matrix
+The editable source for this diagram is available at [images/aap-27-containerized-architecture.svg](images/aap-27-containerized-architecture.svg).
 
-| Decision | Benefit | Tradeoff | Mitigation |
-| --- | --- | --- | --- |
-| Single-VM deployment | Fast to deploy and easy to understand | VM failure affects the entire platform | Use for lab, PoC, demo, and small non-critical use cases only. |
-| Local PostgreSQL | Simplifies the first installation | Database availability and backup lifecycle depend on the same VM | Move to external PostgreSQL for production-aligned designs. |
-| Standalone Redis | Keeps Redis configuration simple | No Redis-level redundancy | Review enterprise topology and Redis requirements for production. |
-| Non-FIPS installation | Reduces lab complexity | Not suitable for regulated FIPS requirements | Enable FIPS during RHEL installation when required. |
-| `hub_seed_collections=false` | Faster initial install with lower content footprint | Hub starts without seeded collections | Sync certified, validated, and internal content after platform validation. |
-| Installer-generated certificates | Speeds up lab validation | Browser trust warnings and not production-grade trust model | Use organization-approved certificates for production. |
-| All components on one host | Shows the complete AAP service model quickly | Shared resource contention across services | Size the VM appropriately and use enterprise topology when workload grows. |
+The deployment uses the AAP 2.7 containerized installer and the `inventory-growth` inventory file. The installer is executed locally on the same VM where AAP is installed, so the inventory uses:
+
+```ini
+ansible_connection=local
+```
 
 ## AAP Component Overview
 
@@ -295,6 +270,34 @@ redis_data_tcp
 redis_run
 ```
 
+## Assumptions, Constraints, And Non-Goals
+
+| Category | Item | Detail |
+| --- | --- | --- |
+| Assumption | Red Hat subscriptions are available | The VM has access to RHEL content and the AAP installer/images. |
+| Assumption | DNS and host resolution are controlled | The lab uses `aap.lab.example.com` with static IP `192.168.34.155`. |
+| Assumption | Installer user has sudo access | The `rajat` user is part of the `wheel` group. |
+| Constraint | Single VM | All platform services share the same compute, storage, network, and failure domain. |
+| Constraint | Local PostgreSQL | Database lifecycle is tied to the AAP VM in this lab. |
+| Constraint | Standalone Redis | Redis is not deployed as a highly available clustered service. |
+| Constraint | Non-FIPS | This lab is not designed for FIPS-regulated environments. |
+| Constraint | Lab certificate posture | Browser certificate warnings can occur when installer-generated certificates are used. |
+| Non-goal | High availability | This blog does not build a redundant platform. |
+| Non-goal | Production hardening | This blog does not fully cover SSO, backup automation, monitoring, DR, certificate lifecycle, or network segmentation. |
+| Non-goal | Multi-site architecture | This blog does not design distributed automation mesh or multi-region resiliency. |
+
+## Risk And Tradeoff Matrix
+
+| Decision | Benefit | Tradeoff | Mitigation |
+| --- | --- | --- | --- |
+| Single-VM deployment | Fast to deploy and easy to understand | VM failure affects the entire platform | Use for lab, PoC, demo, and small non-critical use cases only. |
+| Local PostgreSQL | Simplifies the first installation | Database availability and backup lifecycle depend on the same VM | Move to external PostgreSQL for production-aligned designs. |
+| Standalone Redis | Keeps Redis configuration simple | No Redis-level redundancy | Review enterprise topology and Redis requirements for production. |
+| Non-FIPS installation | Reduces lab complexity | Not suitable for regulated FIPS requirements | Enable FIPS during RHEL installation when required. |
+| `hub_seed_collections=false` | Faster initial install with lower content footprint | Hub starts without seeded collections | Sync certified, validated, and internal content after platform validation. |
+| Installer-generated certificates | Speeds up lab validation | Browser trust warnings and not production-grade trust model | Use organization-approved certificates for production. |
+| All components on one host | Shows the complete AAP service model quickly | Shared resource contention across services | Size the VM appropriately and use enterprise topology when workload grows. |
+
 ## System Requirements
 
 Before starting, make sure you have:
@@ -328,34 +331,6 @@ The official AAP 2.7 containerized installer system requirements include:
 > [!NOTE]
 > For growth topology bundled installations with `hub_seed_collections=true`, Red Hat documents 32 GB memory as required. In this lab, `hub_seed_collections=false` was used.
 
-## Understanding hub_seed_collections
-
-The `hub_seed_collections` variable controls whether the installer seeds private automation hub with initial automation content during installation.
-
-Use:
-
-```ini
-hub_seed_collections=true
-```
-
-when you want the installer to seed automation hub content during the initial deployment. This can be useful when you want a more complete hub experience immediately after installation, but it increases installation time and resource usage. Red Hat documents a higher memory requirement for growth topology bundled installations when this value is enabled.
-
-Use:
-
-```ini
-hub_seed_collections=false
-```
-
-when you want a smaller and faster base platform installation. With this option, private automation hub is installed, but you can add or sync collections later after the platform is stable.
-
-This lab used:
-
-```ini
-hub_seed_collections=false
-```
-
-The reason was practical: first complete the container growth topology installation, verify gateway, controller, hub, EDA, metrics, PostgreSQL, and Redis, then manage automation content as a separate post-install milestone.
-
 ## Lab Environment Used
 
 The installation in this guide was completed with the following lab configuration:
@@ -387,6 +362,34 @@ This lab was installed in non-FIPS mode.
 
 If you need FIPS mode, enable FIPS during the RHEL installation. Do not install AAP first and attempt to retrofit FIPS later.
 
+## Understanding hub_seed_collections
+
+The `hub_seed_collections` variable controls whether the installer seeds private automation hub with initial automation content during installation.
+
+Use:
+
+```ini
+hub_seed_collections=true
+```
+
+when you want the installer to seed automation hub content during the initial deployment. This can be useful when you want a more complete hub experience immediately after installation, but it increases installation time and resource usage. Red Hat documents a higher memory requirement for growth topology bundled installations when this value is enabled.
+
+Use:
+
+```ini
+hub_seed_collections=false
+```
+
+when you want a smaller and faster base platform installation. With this option, private automation hub is installed, but you can add or sync collections later after the platform is stable.
+
+This lab used:
+
+```ini
+hub_seed_collections=false
+```
+
+The reason was practical: first complete the container growth topology installation, verify gateway, controller, hub, EDA, metrics, PostgreSQL, and Redis, then manage automation content as a separate post-install milestone.
+
 ## Installation Steps
 
 ### Step 1 - Create The RHEL VM
@@ -399,6 +402,7 @@ Create a RHEL VM with at least the official minimum resources. For this lab, the
 - RHEL 10.2
 - static IPv4 address
 - non-FIPS mode
+- non-root installation user with sudo access
 
 Set the hostname:
 
@@ -424,7 +428,7 @@ Result:
 # the SSH session disconnects while the VM reboots
 ```
 
-### Step 2 - Create A Sudo User
+### Step 2 - Validate The Sudo User
 
 This lab used a non-root user named `rajat`.
 
@@ -882,15 +886,13 @@ Inspect the installer directory:
 Example output:
 
 ```text
-total 472
+total 92
 drwxr-xr-x.  3 rajat rajat    158 Jul 14 23:48 .
 drwx------. 18 rajat rajat   4096 Jul 14 23:49 ..
--rw-r--r--.  1 rajat rajat 384772 Jul 15 00:00 aap_install.log
 -rw-r--r--.  1 rajat rajat    146 Jun 18 11:52 ansible.cfg
 drwxr-xr-x.  3 rajat rajat     33 Jun 18 11:52 collections
 -rw-r--r--.  1 rajat rajat   3662 Jun 18 11:52 inventory
--rw-r--r--.  1 rajat rajat   3429 Jul 14 23:48 inventory-growth
--rw-r--r--.  1 rajat rajat   3443 Jun 18 11:52 inventory-growth.original
+-rw-r--r--.  1 rajat rajat   3443 Jun 18 11:52 inventory-growth
 -rw-r--r--.  1 rajat rajat  74768 Jun 18 11:52 README.md
 ```
 
@@ -904,8 +906,7 @@ Example output:
 
 ```text
 -rw-r--r--. 1 rajat rajat 3662 Jun 18 11:52 inventory
--rw-r--r--. 1 rajat rajat 3429 Jul 14 23:48 inventory-growth
--rw-r--r--. 1 rajat rajat 3443 Jun 18 11:52 inventory-growth.original
+-rw-r--r--. 1 rajat rajat 3443 Jun 18 11:52 inventory-growth
 ```
 
 ### Step 9 - Back Up The Original Inventory
@@ -949,6 +950,20 @@ Result:
 ```
 
 This gives you a clean reference copy if the install fails.
+
+Verify the inventory files:
+
+```console
+[rajat@aap ansible-automation-platform-containerized-setup-2.7-2]$ ls -la inventory*
+```
+
+Example output:
+
+```text
+-rw-r--r--. 1 rajat rajat 3662 Jun 18 11:52 inventory
+-rw-------. 1 rajat rajat 3443 Jul 14 23:48 inventory-growth
+-r--------. 1 rajat rajat 3443 Jun 18 11:52 inventory-growth.original
+```
 
 ### Step 10 - Configure `inventory-growth`
 
@@ -1272,6 +1287,23 @@ Result:
 # Use this only when troubleshooting or collecting additional detail.
 ```
 
+## Validation Matrix
+
+The following matrix summarizes the acceptance criteria for this build. This is useful when presenting the work as a solution architecture deliverable because it separates successful installation from validated platform readiness.
+
+| Validation area | Acceptance criteria | Evidence in this blog |
+| --- | --- | --- |
+| VM baseline | Hostname, static IP, RHEL version, architecture, and time synchronization are confirmed. | `hostnamectl`, `ip addr`, and `timedatectl` outputs. |
+| Subscription access | RHEL host is connected to Red Hat Subscription Management and Red Hat content repositories. | `rhc status` output. |
+| Registry access | VM can resolve and reach `registry.redhat.io`, and `podman login` succeeds. | Registry DNS, HTTPS `401`, and login validation. |
+| Installer package | AAP 2.7 containerized installer is downloaded, extracted, and inspected. | Installer directory and inventory file listing. |
+| Inventory integrity | `inventory-growth` parses successfully and has no unresolved active placeholders or hostname typos. | `ansible-inventory --list`, `ansible-inventory --graph`, and placeholder scan. |
+| Platform installation | Installer completes with no failed or unreachable hosts. | Successful `ansible-playbook` completion. |
+| Gateway access | AAP UI loads through `https://aap.lab.example.com`. | Browser validation and dashboard screenshot. |
+| Container health | AAP service containers are running. | `podman ps --format` output. |
+| Persistence | Required Podman named volumes exist for platform data. | `podman volume ls` output. |
+| Topology behavior | Containers are running as standalone containers, with no Podman pods shown. | `podman pod ps` output. |
+
 ## Post Installation Validation
 
 ### Validate AAP From The Browser
@@ -1397,23 +1429,6 @@ The successful lab showed containers for:
 - `automation-metrics-scheduler`
 
 The successful lab also created local Podman volumes for PostgreSQL, Redis, gateway, receptor, controller, EDA, and hub data.
-
-## Validation Matrix
-
-The following matrix summarizes the acceptance criteria for this build. This is useful when presenting the work as a solution architecture deliverable because it separates successful installation from validated platform readiness.
-
-| Validation area | Acceptance criteria | Evidence in this blog |
-| --- | --- | --- |
-| VM baseline | Hostname, static IP, RHEL version, architecture, and time synchronization are confirmed. | `hostnamectl`, `ip addr`, and `timedatectl` outputs. |
-| Subscription access | RHEL host is connected to Red Hat Subscription Management and Red Hat content repositories. | `rhc status` output. |
-| Registry access | VM can resolve and reach `registry.redhat.io`, and `podman login` succeeds. | Registry DNS, HTTPS `401`, and login validation. |
-| Installer package | AAP 2.7 containerized installer is downloaded, extracted, and inspected. | Installer directory and inventory file listing. |
-| Inventory integrity | `inventory-growth` parses successfully and has no unresolved active placeholders or hostname typos. | `ansible-inventory --list`, `ansible-inventory --graph`, and placeholder scan. |
-| Platform installation | Installer completes with no failed or unreachable hosts. | Successful `ansible-playbook` completion. |
-| Gateway access | AAP UI loads through `https://aap.lab.example.com`. | Browser validation and dashboard screenshot. |
-| Container health | AAP service containers are running. | `podman ps --format` output. |
-| Persistence | Required Podman named volumes exist for platform data. | `podman volume ls` output. |
-| Topology behavior | Containers are running as standalone containers, with no Podman pods shown. | `podman pod ps` output. |
 
 ## Production Readiness Considerations
 
@@ -1607,16 +1622,6 @@ For a lab with installer-generated certificates, the browser might show a certif
 
 For production, use certificates trusted by your organization. For a lab, you can either proceed through the browser warning or import the generated certificate into your workstation trust store after verifying its fingerprint.
 
-## Client-Facing Conclusion
-
-This deployment proves that a complete AAP 2.7 platform can be installed with the container growth topology on a single RHEL VM. It is a practical architecture for labs, proofs of concept, workshops, internal enablement, and early-stage platform design conversations.
-
-The design gives customers and technical stakeholders a working view of the AAP service model: gateway for unified access, controller for automation execution, private automation hub for governed content, Event-Driven Ansible for event-based decisions, metrics service for usage and performance data, and local PostgreSQL and Redis as supporting platform services.
-
-As a consultant or solution architect, the important recommendation is to treat this as a starting point. Once the platform use case moves toward production, the conversation should shift to enterprise topology, external database strategy, backup and restore, SSO, RBAC governance, monitoring, certificate management, execution capacity, automation mesh, and disaster recovery.
-
-The result is a clear path from a reproducible single-VM platform build to a production-ready automation architecture.
-
 ## Summary
 
 By following this guide, you installed Red Hat Ansible Automation Platform 2.7 using the container growth topology on Red Hat Enterprise Linux 10.2.
@@ -1637,6 +1642,16 @@ You completed:
 - post-install roadmap and enterprise integration planning
 
 The platform is now ready for the next phase: configuring AAP as code with organizations, teams, RBAC, inventories, projects, job templates, execution environments, workflows, notifications, and enterprise integrations.
+
+## Client-Facing Conclusion
+
+This deployment proves that a complete AAP 2.7 platform can be installed with the container growth topology on a single RHEL VM. It is a practical architecture for labs, proofs of concept, workshops, internal enablement, and early-stage platform design conversations.
+
+The design gives customers and technical stakeholders a working view of the AAP service model: gateway for unified access, controller for automation execution, private automation hub for governed content, Event-Driven Ansible for event-based decisions, metrics service for usage and performance data, and local PostgreSQL and Redis as supporting platform services.
+
+As a consultant or solution architect, the important recommendation is to treat this as a starting point. Once the platform use case moves toward production, the conversation should shift to enterprise topology, external database strategy, backup and restore, SSO, RBAC governance, monitoring, certificate management, execution capacity, automation mesh, and disaster recovery.
+
+The result is a clear path from a reproducible single-VM platform build to a production-ready automation architecture.
 
 ## References
 
