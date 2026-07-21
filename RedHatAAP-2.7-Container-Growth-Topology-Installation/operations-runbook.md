@@ -149,9 +149,9 @@ After platform changes:
 
 ## Certificate Operations
 
-This project uses project certificate posture. Before production:
+This project uses non-production certificate posture. Before production:
 
-- replace project certificates with organization-approved certificates
+- replace installer-generated or untrusted certificates with organization-approved certificates
 - document certificate source and owner
 - document expiration date
 - monitor expiration

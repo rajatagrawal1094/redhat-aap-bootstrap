@@ -46,7 +46,7 @@ This file documents the network, trust, and access model for the AAP 2.7 contain
 
 | Control | Current project position | Production recommendation |
 | --- | --- | --- |
-| TLS certificates | Installer-generated or project certificate posture. | Replace with organization-approved certificates. |
+| TLS certificates | Installer-generated or non-production certificate posture. | Replace with organization-approved certificates. |
 | Authentication | Local admin login for initial validation. | Integrate with SSO such as LDAP, SAML, or OIDC where supported. |
 | Authorization | Baseline platform access after install. | Design organizations, teams, RBAC, and separation of duties. |
 | Secrets | Public artifact uses `<redacted>` placeholders. | Store secrets in a private vault, SOPS, Ansible Vault, or approved enterprise secrets service. |

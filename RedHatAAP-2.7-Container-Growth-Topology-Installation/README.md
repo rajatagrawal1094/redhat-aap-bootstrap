@@ -34,7 +34,7 @@ From a solution architecture perspective, this topology is useful when the goal 
 
 The design intentionally accepts a single-VM failure domain. That tradeoff is reasonable for projects, proofs of concept, demos, workshops, and small non-critical environments, but it should not be treated as a final enterprise production design without additional work.
 
-The outcome of this project is a working AAP 2.7 installation plus a supporting architecture package for decision records, network and security design, backup and restore, operations, acceptance evidence, and optional post-install platform configuration.
+The outcome of this project is a working AAP 2.7 installation plus a supporting architecture package for business requirements, technical requirements, traceability, decision records, network and security design, backup and restore, operations, acceptance evidence, production readiness, and optional post-install platform configuration.
 
 ## Introduction
 
@@ -76,12 +76,23 @@ This project does not claim to be a production high availability architecture. I
 
 | Artifact | Purpose |
 | --- | --- |
+| [business-requirements-document.md](business-requirements-document.md) | Defines the business problem, objectives, stakeholders, scope, business requirements, risks, and acceptance criteria. |
+| [technical-requirements-document.md](technical-requirements-document.md) | Translates the business requirements into platform, infrastructure, security, operations, validation, integration, and nonfunctional requirements. |
+| [requirements-traceability-matrix.md](requirements-traceability-matrix.md) | Maps business requirements to technical requirements, design artifacts, implementation evidence, validation evidence, and production gaps. |
+| [stakeholder-operating-model.md](stakeholder-operating-model.md) | Defines stakeholders, ownership boundaries, responsibility model, and handoff expectations. |
 | [architecture-decision-records.md](architecture-decision-records.md) | Captures the major architecture decisions, rationale, and consequences. |
+| [architecture-views.md](architecture-views.md) | Provides context, deployment, access-flow, installation-flow, and data-persistence views. |
 | [network-and-security-design.md](network-and-security-design.md) | Defines the project environment network model, trust boundaries, traffic matrix, and security posture. |
+| [security-and-compliance-model.md](security-and-compliance-model.md) | Defines identity, access, secrets, certificates, FIPS, compliance posture, risks, and required evidence. |
 | [backup-restore-and-dr.md](backup-restore-and-dr.md) | Defines backup, restore, and disaster recovery expectations for the single-VM topology. |
 | [operations-runbook.md](operations-runbook.md) | Provides day-2 health checks, incident triage, change checks, and operational evidence guidance. |
 | [acceptance-test-evidence.md](acceptance-test-evidence.md) | Summarizes the acceptance criteria and public evidence for the completed install. |
+| [capacity-and-scaling-strategy.md](capacity-and-scaling-strategy.md) | Documents current sizing rationale, capacity watchpoints, scaling triggers, and growth path. |
+| [production-readiness-roadmap.md](production-readiness-roadmap.md) | Defines the roadmap from the current project environment to a production-ready automation platform. |
+| [known-limitations.md](known-limitations.md) | States the known limitations and when this project should not be used without additional work. |
+| [architecture-review-checklist.md](architecture-review-checklist.md) | Provides a solution architecture review checklist and customer discussion prompts. |
 | [post-install-platform-configuration.md](post-install-platform-configuration.md) | Defines optional extensions for turning the installed platform into a governed automation service. |
+| [automation-implementation-roadmap.md](automation-implementation-roadmap.md) | Defines the recommended playbooks, roles, collection structure, and CI checks for the next automation phase. |
 | [inventory-growth](inventory-growth) | Provides the sanitized installer inventory used by this project environment. |
 | [images/aap-27-containerized-architecture.svg](images/aap-27-containerized-architecture.svg) | Provides the editable source for the architecture diagram. |
 
@@ -1662,11 +1673,22 @@ By following this guide, you installed Red Hat Ansible Automation Platform 2.7 u
 You completed:
 
 - architecture decision and design rationale
+- business requirements document
+- technical requirements document
+- requirements traceability matrix
+- stakeholder and operating model
 - architecture decision records
+- architecture views
 - network and security design
+- security and compliance model
 - backup, restore, and disaster recovery design
 - operations runbook
 - acceptance evidence package
+- capacity and scaling strategy
+- production readiness roadmap
+- known limitations
+- architecture review checklist
+- automation implementation roadmap
 - assumptions, constraints, non-goals, and risk tradeoffs
 - VM preparation
 - hostname and DNS validation
@@ -1683,7 +1705,7 @@ The platform is now ready for optional post-install configuration as code with o
 
 ## Client-Facing Conclusion
 
-This deployment proves that a complete AAP 2.7 platform can be installed with the container growth topology on a single RHEL VM. It is a practical architecture for labs, proofs of concept, workshops, internal enablement, and early-stage platform design conversations.
+This deployment proves that a complete AAP 2.7 platform can be installed with the container growth topology on a single RHEL VM. It is a practical architecture for learning projects, proofs of concept, workshops, internal enablement, and early-stage platform design conversations.
 
 The design gives customers and technical stakeholders a working view of the AAP service model: gateway for unified access, controller for automation execution, private automation hub for governed content, Event-Driven Ansible for event-based decisions, metrics service for usage and performance data, and local PostgreSQL and Redis as supporting platform services.
 
