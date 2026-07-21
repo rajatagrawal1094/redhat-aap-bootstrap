@@ -1,16 +1,16 @@
 # Backup, Restore, And Disaster Recovery
 
-This runbook defines the backup and disaster recovery posture for the AAP 2.7 container growth topology lab.
+This runbook defines the backup and disaster recovery posture for the AAP 2.7 container growth topology project.
 
 ## Design Position
 
-This Phase 1 lab uses a single RHEL VM with local PostgreSQL and local Podman volumes. The design is appropriate for learning, PoC, demo, and consulting validation, but it has one failure domain.
+This project uses a single RHEL VM with local PostgreSQL and local Podman volumes. The design is appropriate for learning, PoC, demo, and consulting validation, but it has one failure domain.
 
 For production, the backup and restore design must be tested before the platform is used for critical automation.
 
 ## Recovery Objectives
 
-| Objective | Phase 1 lab target | Production recommendation |
+| Objective | Project target | Production recommendation |
 | --- | --- | --- |
 | RPO | Best effort; backup before major platform changes. | Define based on automation criticality and job history retention requirements. |
 | RTO | Manual restore. | Define a tested restore procedure and recovery time target. |
@@ -46,7 +46,7 @@ Run the supported containerized installer backup playbook:
 
 By default, backup artifacts are written under the installer backup directory. Red Hat documents `backup_dir` as the variable for changing the backup destination.
 
-Recommended lab backup destination:
+Recommended project backup destination:
 
 ```ini
 backup_dir=/home/rajat/aap-backups
@@ -97,7 +97,7 @@ Run the supported restore playbook:
 | Gateway UI | Open `https://aap.lab.example.com` | UI loads successfully. |
 | Containers | `podman ps --format 'table {{.Names}}\t{{.Status}}'` | Required AAP containers are running. |
 | Volumes | `podman volume ls` | Required platform volumes exist. |
-| Podman pods | `podman pod ps` | No pods are expected for this lab. |
+| Podman pods | `podman pod ps` | No pods are expected for this project environment. |
 | Controller objects | UI or API check | Organizations, inventories, projects, and templates are visible if configured before backup. |
 | Hub content | UI or API check | Hub content is visible if synced before backup. |
 | EDA | UI or API check | EDA service is reachable if configured before backup. |
@@ -125,4 +125,3 @@ Run the supported restore playbook:
 ## References
 
 - [Red Hat AAP 2.7 back up and restore your containerized deployment](https://docs.redhat.com/en/documentation/red_hat_ansible_automation_platform/2.7/administer-back_up_and_restore_your_containerized_deployment)
-

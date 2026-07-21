@@ -57,7 +57,7 @@
   <text class="title" x="80" y="58">Red Hat Ansible Automation Platform 2.7</text>
   <text class="subtitle" x="80" y="97">Container growth topology on one RHEL 10.2 VM</text>
   <text class="subtitle" x="1590" y="58">aap.lab.example.com</text>
-  <text class="subtitle" x="1590" y="97">192.168.34.155 | non-FIPS lab</text>
+  <text class="subtitle" x="1590" y="97">192.168.34.155 | non-FIPS project</text>
 
   <!-- External users and install context -->
   <rect class="box" x="70" y="195" width="365" height="205"/>
@@ -144,7 +144,7 @@
   <text class="label" x="585" y="948">Required with controller in 2.7</text>
   <text class="label" x="585" y="978">Reads controller DB read-only</text>
   <text class="label" x="585" y="1008">Maintains metrics_service DB</text>
-  <text class="labelSmall" x="585" y="1042">Dashboard collection disabled in this lab</text>
+  <text class="labelSmall" x="585" y="1042">Dashboard collection disabled for this build</text>
   <text class="code" x="585" y="1080">web | tasks | scheduler</text>
 
   <rect class="boxGreen" x="930" y="865" width="350" height="245"/>
@@ -152,7 +152,7 @@
   <text class="label" x="960" y="948">Execution routing for jobs</text>
   <text class="label" x="960" y="978">Connects controller to local or</text>
   <text class="label" x="960" y="1008">remote execution capacity</text>
-  <text class="labelSmall" x="960" y="1042">Single-node lab today, mesh-ready pattern</text>
+  <text class="labelSmall" x="960" y="1042">Single-node build with mesh-ready pattern</text>
   <text class="code" x="960" y="1080">container: receptor</text>
 
   <rect class="boxSlate" x="1305" y="865" width="350" height="245"/>
@@ -160,7 +160,7 @@
   <text class="label" x="1335" y="948">PostgreSQL 15 databases</text>
   <text class="label" x="1335" y="978">Redis tcp and unix services</text>
   <text class="label" x="1335" y="1008">Used by platform components</text>
-  <text class="labelSmall" x="1335" y="1042">Installer-managed for this single-VM lab</text>
+  <text class="labelSmall" x="1335" y="1042">Installer-managed for this single-VM project</text>
   <text class="code" x="1335" y="1080">postgresql | redis-tcp | redis-unix</text>
 
   <rect class="box" x="555" y="1168" width="1100" height="125"/>
@@ -233,7 +233,7 @@
   <text class="tagText" x="951" y="1427">Content</text>
   <rect class="tagPurple" x="1055" y="1406" width="118" height="30"/>
   <text class="tagText" x="1092" y="1427">Events</text>
-  <text class="labelSmall" x="1198" y="1428">Diagram reflects this lab inventory and observed container runtime after installation.</text>
+  <text class="labelSmall" x="1198" y="1428">Diagram reflects this project inventory and observed container runtime after installation.</text>
 
-  <text class="footnote" x="70" y="1465">Reference basis: Red Hat AAP 2.7 containerized installer docs, platform gateway/API docs, metrics service architecture docs, Event-Driven Ansible docs, automation mesh docs, and AAP 2.7 Red Hat blog. Adapted for this single-VM container growth topology lab.</text>
+  <text class="footnote" x="70" y="1465">Reference basis: Red Hat AAP 2.7 containerized installer docs, platform gateway/API docs, metrics service architecture docs, Event-Driven Ansible docs, automation mesh docs, and AAP 2.7 release information. Adapted for this single-VM container growth topology project.</text>
 </svg>

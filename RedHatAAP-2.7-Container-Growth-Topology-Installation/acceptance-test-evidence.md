@@ -24,14 +24,14 @@ This file summarizes the acceptance criteria and evidence for the AAP 2.7 contai
 
 The public artifact does not include the full private installer log because logs can contain environment-specific details.
 
-The required installer acceptance condition for this lab is:
+The required installer acceptance condition for this project environment is:
 
 ```text
 unreachable=0
 failed=0
 ```
 
-Recommended sanitized evidence format for future updates:
+Recommended sanitized evidence format for later updates:
 
 ```text
 PLAY RECAP *********************************************************************
@@ -134,7 +134,7 @@ POD ID      NAME        STATUS      CREATED     INFRA ID    # OF CONTAINERS
 Interpretation:
 
 - The installer created standalone containers.
-- No Podman pods were observed in this lab.
+- No Podman pods were observed in this project environment.
 
 ## Inventory Evidence
 
@@ -150,9 +150,9 @@ Acceptance criteria:
 - `redis_mode=standalone`
 - `FEATURE_DASHBOARD_COLLECTION_ENABLED=false`
 
-## Remaining Evidence To Capture In Later Phases
+## Additional Evidence To Capture
 
-| Future evidence | Reason |
+| Additional evidence | Reason |
 | --- | --- |
 | Subscription activation screenshot | Proves entitlement activation after install. |
 | Gateway API token validation | Proves API access through platform gateway. |

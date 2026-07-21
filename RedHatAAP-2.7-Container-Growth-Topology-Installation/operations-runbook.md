@@ -1,10 +1,10 @@
 # Operations Runbook
 
-This runbook defines day-2 operating checks for the AAP 2.7 container growth topology lab.
+This runbook defines day-2 operating checks for the AAP 2.7 container growth topology project.
 
 ## Operating Model
 
-| Area | Phase 1 lab owner | Production owner |
+| Area | Project owner | Production owner |
 | --- | --- | --- |
 | RHEL host | Platform administrator | Linux/platform operations |
 | AAP platform | Platform administrator | Automation platform team |
@@ -65,7 +65,7 @@ Confirm:
 
 ## Container-Level Validation
 
-Required running containers for this lab:
+Required running containers for this project environment:
 
 ```text
 postgresql
@@ -145,13 +145,13 @@ After platform changes:
 - Re-open the UI.
 - Validate affected services.
 - Record screenshots or command outputs.
-- Update the acceptance evidence if the change is part of the portfolio.
+- Update the acceptance evidence if the change is part of the project evidence.
 
 ## Certificate Operations
 
-Phase 1 uses lab certificate posture. Before production:
+This project uses project certificate posture. Before production:
 
-- replace lab certificates with organization-approved certificates
+- replace project certificates with organization-approved certificates
 - document certificate source and owner
 - document expiration date
 - monitor expiration
@@ -194,4 +194,3 @@ Do not commit subscription manifest files.
 - certificate replacement evidence if performed
 - subscription activation screenshot
 - post-change validation results
-

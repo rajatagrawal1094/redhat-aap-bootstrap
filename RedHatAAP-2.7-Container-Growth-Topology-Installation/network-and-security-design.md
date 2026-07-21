@@ -1,6 +1,6 @@
 # Network And Security Design
 
-This file documents the network, trust, and access model for the AAP 2.7 container growth topology lab.
+This file documents the network, trust, and access model for the AAP 2.7 container growth topology project.
 
 ## Network Summary
 
@@ -25,7 +25,7 @@ This file documents the network, trust, and access model for the AAP 2.7 contain
 | AAP to automation targets | Controller and execution capacity reach managed infrastructure. | Add target-network rules only for approved automation domains. |
 | AAP to external integrations | Git, registry, ITSM, secrets, observability, and collaboration systems. | Use outbound access with least required scope and audited credentials. |
 
-## Lab Traffic Matrix
+## Project Traffic Matrix
 
 | Source | Destination | Port | Protocol | Purpose | Exposure guidance |
 | --- | --- | --- | --- | --- | --- |
@@ -36,24 +36,24 @@ This file documents the network, trust, and access model for the AAP 2.7 contain
 | AAP VM | Git provider | 443 or 22 | HTTPS or SSH | Pull automation content after platform configuration. | Outbound only; prefer scoped tokens or deploy keys. |
 | AAP VM | Container registry or Private Automation Hub | 443 | HTTPS | Pull or publish execution environment images. | Outbound only unless hub is serving approved internal clients. |
 | AAP VM | Managed Linux targets | 22 | SSH | Job execution against Linux targets. | Open only to approved target networks. |
-| AAP VM | Managed Windows targets | 5986 | WinRM over HTTPS | Future Windows automation. | Open only if Windows automation is in scope. |
+| AAP VM | Managed Windows targets | 5986 | WinRM over HTTPS | Optional Windows automation. | Open only if Windows automation is in scope. |
 | AAP VM | ITSM, chat, observability, or secrets platforms | 443 | HTTPS | Notifications, tickets, event sources, and secret lookups. | Outbound only with least-privilege credentials. |
 | Platform services | Local PostgreSQL | 5432 | PostgreSQL | AAP component databases. | Keep internal to the VM or platform network for this topology. |
 | Platform services | Local Redis | 6379 | Redis | Cache, queueing, and event processing support. | Keep internal to the VM or platform network. |
-| Controller and execution nodes | Receptor peers | 27199 | Receptor | Automation mesh communication if execution nodes are added. | Not required for the single-node baseline; open only when mesh is designed. |
+| Controller and execution nodes | Receptor peers | 27199 | Receptor | Automation mesh communication if execution nodes are added. | Not required for this single-node installation; open only when mesh is designed. |
 
-## Security Controls For This Lab
+## Security Controls For This Project
 
-| Control | Current lab position | Production recommendation |
+| Control | Current project position | Production recommendation |
 | --- | --- | --- |
-| TLS certificates | Installer-generated or lab certificate posture. | Replace with organization-approved certificates. |
+| TLS certificates | Installer-generated or project certificate posture. | Replace with organization-approved certificates. |
 | Authentication | Local admin login for initial validation. | Integrate with SSO such as LDAP, SAML, or OIDC where supported. |
 | Authorization | Baseline platform access after install. | Design organizations, teams, RBAC, and separation of duties. |
 | Secrets | Public artifact uses `<redacted>` placeholders. | Store secrets in a private vault, SOPS, Ansible Vault, or approved enterprise secrets service. |
-| Database access | Local PostgreSQL for Phase 1. | Restrict database access and evaluate external PostgreSQL for production. |
+| Database access | Local PostgreSQL for this project. | Restrict database access and evaluate external PostgreSQL for production. |
 | Registry access | Red Hat registry credentials used during install. | Prefer registry service accounts with scoped access and rotation. |
 | SSH access | Installer user has sudo through `wheel`. | Restrict SSH by source network, use key-based auth, and audit sudo access. |
-| Host firewall | Not fully documented in Phase 1. | Define and enforce allowed inbound and outbound rules. |
+| Host firewall | Traffic requirements are documented in this file. | Define and enforce allowed inbound and outbound rules before production use. |
 | Audit evidence | Browser and container validation captured. | Add API validation, audit logs, job history, and compliance evidence. |
 
 ## Firewall Design Notes
@@ -68,7 +68,7 @@ This file documents the network, trust, and access model for the AAP 2.7 contain
 ## DNS And Certificate Notes
 
 - The AAP FQDN used by users, API clients, and certificates should remain consistent.
-- This lab uses `aap.lab.example.com`.
+- This project environment uses `aap.lab.example.com`.
 - Workstation and VM name resolution must both resolve the AAP FQDN to the correct host.
 - Production should use a DNS name and TLS certificate trusted by the organization.
 
@@ -76,4 +76,3 @@ This file documents the network, trust, and access model for the AAP 2.7 contain
 
 - [Red Hat AAP 2.7 network ports and protocols](https://docs.redhat.com/en/documentation/red_hat_ansible_automation_platform/2.7/plan-assembly_network_ports_protocols)
 - [Red Hat AAP 2.7 topology and networking guidance](https://docs.redhat.com/en/documentation/red_hat_ansible_automation_platform/2.7/secure-ref_architecture)
-

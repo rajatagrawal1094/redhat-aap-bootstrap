@@ -1,6 +1,6 @@
 # Post-Install Platform Configuration
 
-This file defines the next architecture milestone after the AAP 2.7 container growth topology installation.
+This file defines optional post-install platform configuration extensions for the AAP 2.7 container growth topology installation project.
 
 ## Objective
 
@@ -17,7 +17,7 @@ The installation proves that AAP is running. The post-install configuration prov
 | Teams | Platform admins, automation developers, operators, security automation, and auditors are separated. |
 | RBAC | Users can only administer, build, execute, or review according to role. |
 | Credentials | Machine, source control, registry, hub, vault, and notification credentials are modeled without exposing secrets. |
-| Inventories | Static or dynamic inventory sources are defined for lab targets. |
+| Inventories | Static or dynamic inventory sources are defined for project targets. |
 | Projects | Git-backed automation content is synchronized into controller. |
 | Execution environments | Approved runtimes are registered and attached to templates. |
 | Job templates | Standard operational jobs are available for controlled launch. |
@@ -72,7 +72,7 @@ Linux Patch And Validate Workflow
 
 ## Solution Architect Value
 
-This post-install phase demonstrates that AAP is not just installed. It is operated as a platform service with:
+This post-install configuration extension demonstrates that AAP is not just installed. It is operated as a platform service with:
 
 - source-controlled configuration
 - repeatable platform setup
@@ -113,4 +113,3 @@ This post-install phase demonstrates that AAP is not just installed. It is opera
 11. Configure notifications.
 12. Validate with a real job run.
 13. Capture screenshots and sanitized outputs.
-
