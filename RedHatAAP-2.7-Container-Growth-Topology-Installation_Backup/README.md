@@ -1,11 +1,9 @@
-# Red Hat Ansible Automation Platform 2.7 Container Growth Topology - Phase 1 Architecture Baseline
+# Red Hat Ansible Automation Platform 2.7 Container Growth Topology Installation
 
 ## Table of Contents
 
 - [Executive Summary](#executive-summary)
 - [Introduction](#introduction)
-- [Solution Architect Portfolio Scope](#solution-architect-portfolio-scope)
-- [Supporting Design Artifacts](#supporting-design-artifacts)
 - [When To Use This Topology](#when-to-use-this-topology)
 - [Architecture Decision And Design Rationale](#architecture-decision-and-design-rationale)
 - [Target Architecture](#target-architecture)
@@ -28,13 +26,13 @@
 
 ## Executive Summary
 
-This project is Phase 1 of a Red Hat Ansible Automation Platform architecture portfolio: a reproducible AAP 2.7 container growth topology baseline. The design places platform gateway, automation controller, private automation hub, Event-Driven Ansible controller, Automation Metrics Service, PostgreSQL, and Redis on one RHEL 10.2 virtual machine.
+This lab builds a complete Red Hat Ansible Automation Platform 2.7 environment using the container growth topology. The design places platform gateway, automation controller, private automation hub, Event-Driven Ansible controller, Automation Metrics Service, PostgreSQL, and Redis on one RHEL 10.2 virtual machine.
 
 From a solution architecture perspective, this topology is useful when the goal is speed, clarity, and functional validation rather than high availability. It gives architects, consultants, and platform teams a practical way to demonstrate the AAP operating model, validate integration patterns, and prepare a customer conversation around automation governance.
 
 The design intentionally accepts a single-VM failure domain. That tradeoff is reasonable for labs, proofs of concept, demos, workshops, and small non-critical environments, but it should not be treated as a final enterprise production design without additional work.
 
-The outcome of this build is a working platform baseline plus a supporting architecture package for decision records, network and security design, backup and restore, operations, acceptance evidence, and post-install platform configuration.
+The outcome of this build is a working platform baseline that can evolve into a configuration-as-code project for organizations, teams, RBAC, inventories, credentials, projects, job templates, workflows, execution environments, notifications, content synchronization, and event-driven automation.
 
 ## Introduction
 
@@ -53,37 +51,6 @@ The goal is to build a practical lab that includes the core AAP services on one 
 - Redis
 
 This is not a high availability deployment. It is a lab-oriented container growth topology that is useful for learning, demos, configuration-as-code testing, and portfolio projects.
-
-## Solution Architect Portfolio Scope
-
-This directory is intentionally scoped as a Phase 1 architecture baseline. It proves the platform can be planned, installed, validated, explained, and handed off with architecture context.
-
-Phase 1 demonstrates:
-
-- requirements and lab sizing
-- topology selection and design tradeoffs
-- installation inventory design
-- RHEL host preparation
-- AAP 2.7 containerized installation
-- component-level explanation
-- validation evidence
-- operational readiness considerations
-- transition plan for post-install platform configuration
-
-Phase 1 does not claim to be a production high availability architecture. It also does not claim that RBAC, SSO, workflows, execution environments, content synchronization, or enterprise integrations are fully implemented yet. Those items are defined as the next architecture milestone in [post-install-platform-configuration.md](post-install-platform-configuration.md).
-
-## Supporting Design Artifacts
-
-| Artifact | Purpose |
-| --- | --- |
-| [architecture-decision-records.md](architecture-decision-records.md) | Captures the major architecture decisions, rationale, and consequences. |
-| [network-and-security-design.md](network-and-security-design.md) | Defines the lab network model, trust boundaries, traffic matrix, and security posture. |
-| [backup-restore-and-dr.md](backup-restore-and-dr.md) | Defines backup, restore, and disaster recovery expectations for the single-VM topology. |
-| [operations-runbook.md](operations-runbook.md) | Provides day-2 health checks, incident triage, change checks, and operational evidence guidance. |
-| [acceptance-test-evidence.md](acceptance-test-evidence.md) | Summarizes the acceptance criteria and public evidence for the completed install. |
-| [post-install-platform-configuration.md](post-install-platform-configuration.md) | Defines the next milestone for turning the installed platform into a governed automation service. |
-| [inventory-growth](inventory-growth) | Provides the sanitized installer inventory used by this lab. |
-| [images/aap-27-containerized-architecture.svg](images/aap-27-containerized-architecture.svg) | Provides the editable source for the architecture diagram. |
 
 ## When To Use This Topology
 
@@ -1012,10 +979,10 @@ Result:
 # no output after saving and exiting the editor
 ```
 
-The sanitized inventory used for this lab is shown below. The real VM-side inventory used private values, but all password values are redacted here with `<redacted>`.
+The sanitized inventory used for this lab is shown below. The real VM-side inventory used private values, but all password values are hidden here with `<hiddeen>`.
 
 > [!IMPORTANT]
-> Do not paste `<redacted>` into a real installer inventory. Replace every `<redacted>` value with a private password before running the installer. Replace `<username>` with your Red Hat registry username or service account username.
+> Do not paste `<hiddeen>` into a real installer inventory. Replace every `<hiddeen>` value with a private password before running the installer. Replace `<username>` with your Red Hat registry username or service account username.
 
 ```ini
 # This is the AAP installer inventory file intended for the Container growth deployment topology.
@@ -1078,45 +1045,45 @@ ansible_connection=local
 # Common variables
 # -----------------------------------------------------
 postgresql_admin_username=postgres
-postgresql_admin_password=<redacted>
+postgresql_admin_password=<hiddeen>
 
 registry_username=<username>
-registry_password=<redacted>
+registry_password=<hiddeen>
 
 redis_mode=standalone
 
 # AAP Gateway
 # -----------------------------------------------------
-gateway_admin_password=<redacted>
+gateway_admin_password=<hiddeen>
 gateway_pg_host=aap.lab.example.com
-gateway_pg_password=<redacted>
+gateway_pg_password=<hiddeen>
 
 # AAP Controller
 # -----------------------------------------------------
-controller_admin_password=<redacted>
+controller_admin_password=<hiddeen>
 controller_pg_host=aap.lab.example.com
-controller_pg_password=<redacted>
+controller_pg_password=<hiddeen>
 controller_percent_memory_capacity=0.5
 
 # AAP Automation Hub
 # -----------------------------------------------------
-hub_admin_password=<redacted>
+hub_admin_password=<hiddeen>
 hub_pg_host=aap.lab.example.com
-hub_pg_password=<redacted>
+hub_pg_password=<hiddeen>
 hub_seed_collections=false
 
 # AAP EDA Controller
 # -----------------------------------------------------
-eda_admin_password=<redacted>
+eda_admin_password=<hiddeen>
 eda_pg_host=aap.lab.example.com
-eda_pg_password=<redacted>
+eda_pg_password=<hiddeen>
 
 # AAP Automation Metrics Service
 # -----------------------------------------------------
 automationmetrics_pg_host=aap.lab.example.com
-automationmetrics_pg_password=<redacted>
+automationmetrics_pg_password=<hiddeen>
 automationmetrics_controller_read_pg_host=aap.lab.example.com
-automationmetrics_controller_read_pg_password=<redacted>
+automationmetrics_controller_read_pg_password=<hiddeen>
 FEATURE_DASHBOARD_COLLECTION_ENABLED=false
 ```
 
@@ -1140,28 +1107,28 @@ FEATURE_DASHBOARD_COLLECTION_ENABLED=false
 | --- | --- | --- |
 | `ansible_connection` | `local` | Tells Ansible to run installer tasks locally on the same VM instead of using SSH to reach another host. This is correct because the installer runs from `aap.lab.example.com` and installs AAP on `aap.lab.example.com`. |
 | `postgresql_admin_username` | `postgres` | PostgreSQL administrative user used by the installer when creating platform databases and database users. The installer default is `postgres`, and this lab kept that value. |
-| `postgresql_admin_password` | `<redacted>` | Password for the PostgreSQL admin user. It is required for database creation and must be a real private value in the VM inventory. |
+| `postgresql_admin_password` | `<hiddeen>` | Password for the PostgreSQL admin user. It is required for database creation and must be a real private value in the VM inventory. |
 | `registry_username` | `<username>` | Red Hat registry username or service account username used to pull AAP container images from `registry.redhat.io`. |
-| `registry_password` | `<redacted>` | Red Hat registry password or service account token. This must never be committed to Git. |
+| `registry_password` | `<hiddeen>` | Red Hat registry password or service account token. This must never be committed to Git. |
 | `redis_mode` | `standalone` | Configures Redis in standalone mode. This is appropriate for a single-node lab. The installer also supports `cluster`, which is more relevant to multi-node or enterprise topologies. |
-| `gateway_admin_password` | `<redacted>` | Password for the AAP platform gateway admin user. This is the password used when logging into the platform UI as `admin` unless you also customize the admin username. |
+| `gateway_admin_password` | `<hiddeen>` | Password for the AAP platform gateway admin user. This is the password used when logging into the platform UI as `admin` unless you also customize the admin username. |
 | `gateway_pg_host` | `aap.lab.example.com` | PostgreSQL host used by platform gateway. Because this is a single-VM topology, gateway connects to PostgreSQL on the same VM. |
-| `gateway_pg_password` | `<redacted>` | Database password for the platform gateway database user. |
-| `controller_admin_password` | `<redacted>` | Admin password for automation controller. In AAP 2.7, users normally enter through the platform gateway, but controller still needs its own service/admin configuration during installation. |
+| `gateway_pg_password` | `<hiddeen>` | Database password for the platform gateway database user. |
+| `controller_admin_password` | `<hiddeen>` | Admin password for automation controller. In AAP 2.7, users normally enter through the platform gateway, but controller still needs its own service/admin configuration during installation. |
 | `controller_pg_host` | `aap.lab.example.com` | PostgreSQL host used by automation controller. This points to the local VM in this container growth topology. |
-| `controller_pg_password` | `<redacted>` | Database password for the automation controller database user. |
+| `controller_pg_password` | `<hiddeen>` | Database password for the automation controller database user. |
 | `controller_percent_memory_capacity` | `0.5` | Limits automation controller memory capacity calculation to 50 percent of detected system memory. The installer accepts values from `0.01` to `1.0`; this lab used `0.5` to leave memory for gateway, hub, EDA, metrics, PostgreSQL, Redis, and the operating system on the same VM. |
-| `hub_admin_password` | `<redacted>` | Admin password for private automation hub. |
+| `hub_admin_password` | `<hiddeen>` | Admin password for private automation hub. |
 | `hub_pg_host` | `aap.lab.example.com` | PostgreSQL host used by automation hub. This points to the local VM in this container growth topology. |
-| `hub_pg_password` | `<redacted>` | Database password for the automation hub database user. |
+| `hub_pg_password` | `<hiddeen>` | Database password for the automation hub database user. |
 | `hub_seed_collections` | `false` | Prevents the installer from seeding private automation hub with initial collections during the base install. This keeps the first install faster and smaller. Collections can be synced or uploaded later. |
-| `eda_admin_password` | `<redacted>` | Admin password for Event-Driven Ansible controller. |
+| `eda_admin_password` | `<hiddeen>` | Admin password for Event-Driven Ansible controller. |
 | `eda_pg_host` | `aap.lab.example.com` | PostgreSQL host used by Event-Driven Ansible controller. This points to the local VM in this container growth topology. |
-| `eda_pg_password` | `<redacted>` | Database password for the Event-Driven Ansible controller database user. |
+| `eda_pg_password` | `<hiddeen>` | Database password for the Event-Driven Ansible controller database user. |
 | `automationmetrics_pg_host` | `aap.lab.example.com` | PostgreSQL host used by Automation Metrics Service for its own database. |
-| `automationmetrics_pg_password` | `<redacted>` | Database password for the Automation Metrics Service database user. |
+| `automationmetrics_pg_password` | `<hiddeen>` | Database password for the Automation Metrics Service database user. |
 | `automationmetrics_controller_read_pg_host` | `aap.lab.example.com` | PostgreSQL host for read-only access to the automation controller database. Metrics service needs this when automation controller is deployed so it can read controller data for reporting. |
-| `automationmetrics_controller_read_pg_password` | `<redacted>` | Password for the metrics service read-only database access to automation controller data. |
+| `automationmetrics_controller_read_pg_password` | `<hiddeen>` | Password for the metrics service read-only database access to automation controller data. |
 | `FEATURE_DASHBOARD_COLLECTION_ENABLED` | `false` | Disables the automation dashboard collection feature flag during the initial install. This keeps the first single-VM deployment focused on base platform health; dashboard collection can be enabled later if needed. |
 
 ### Step 11 - Validate The Inventory
@@ -1182,27 +1149,27 @@ Example sanitized output:
                 "FEATURE_DASHBOARD_COLLECTION_ENABLED": "false",
                 "ansible_connection": "local",
                 "automationmetrics_controller_read_pg_host": "aap.lab.example.com",
-                "automationmetrics_controller_read_pg_password": "<redacted>",
+                "automationmetrics_controller_read_pg_password": "<hiddeen>",
                 "automationmetrics_pg_host": "aap.lab.example.com",
-                "automationmetrics_pg_password": "<redacted>",
-                "controller_admin_password": "<redacted>",
+                "automationmetrics_pg_password": "<hiddeen>",
+                "controller_admin_password": "<hiddeen>",
                 "controller_percent_memory_capacity": 0.5,
                 "controller_pg_host": "aap.lab.example.com",
-                "controller_pg_password": "<redacted>",
-                "eda_admin_password": "<redacted>",
+                "controller_pg_password": "<hiddeen>",
+                "eda_admin_password": "<hiddeen>",
                 "eda_pg_host": "aap.lab.example.com",
-                "eda_pg_password": "<redacted>",
-                "gateway_admin_password": "<redacted>",
+                "eda_pg_password": "<hiddeen>",
+                "gateway_admin_password": "<hiddeen>",
                 "gateway_pg_host": "aap.lab.example.com",
-                "gateway_pg_password": "<redacted>",
-                "hub_admin_password": "<redacted>",
+                "gateway_pg_password": "<hiddeen>",
+                "hub_admin_password": "<hiddeen>",
                 "hub_pg_host": "aap.lab.example.com",
-                "hub_pg_password": "<redacted>",
+                "hub_pg_password": "<hiddeen>",
                 "hub_seed_collections": "false",
-                "postgresql_admin_password": "<redacted>",
+                "postgresql_admin_password": "<hiddeen>",
                 "postgresql_admin_username": "postgres",
                 "redis_mode": "standalone",
-                "registry_password": "<redacted>",
+                "registry_password": "<hiddeen>",
                 "registry_username": "<username>"
             }
         }
@@ -1322,7 +1289,7 @@ Result:
 
 ## Validation Matrix
 
-The following matrix summarizes the acceptance criteria for this build. This is useful when presenting the work as a solution architecture deliverable because it separates successful installation from validated platform readiness. Additional acceptance notes are captured in [acceptance-test-evidence.md](acceptance-test-evidence.md).
+The following matrix summarizes the acceptance criteria for this build. This is useful when presenting the work as a solution architecture deliverable because it separates successful installation from validated platform readiness.
 
 | Validation area | Acceptance criteria | Evidence in this blog |
 | --- | --- | --- |
@@ -1465,7 +1432,7 @@ The successful lab also created local Podman volumes for PostgreSQL, Redis, gate
 
 ## Production Readiness Considerations
 
-This build is a strong baseline for learning, PoC, and consulting demonstrations. Before using a similar design for production, review the following areas. The companion files [network-and-security-design.md](network-and-security-design.md), [backup-restore-and-dr.md](backup-restore-and-dr.md), and [operations-runbook.md](operations-runbook.md) expand these areas into project-level architecture artifacts.
+This build is a strong baseline for learning, PoC, and consulting demonstrations. Before using a similar design for production, review the following areas.
 
 | Area | Production consideration |
 | --- | --- |
@@ -1547,9 +1514,9 @@ Also define the metrics database variables:
 
 ```ini
 automationmetrics_pg_host=aap.lab.example.com
-automationmetrics_pg_password=<redacted>
+automationmetrics_pg_password=<hiddeen>
 automationmetrics_controller_read_pg_host=aap.lab.example.com
-automationmetrics_controller_read_pg_password=<redacted>
+automationmetrics_controller_read_pg_password=<hiddeen>
 FEATURE_DASHBOARD_COLLECTION_ENABLED=false
 ```
 
@@ -1662,11 +1629,6 @@ By following this guide, you installed Red Hat Ansible Automation Platform 2.7 u
 You completed:
 
 - architecture decision and design rationale
-- architecture decision records
-- network and security design
-- backup, restore, and disaster recovery design
-- operations runbook
-- acceptance evidence package
 - assumptions, constraints, non-goals, and risk tradeoffs
 - VM preparation
 - hostname and DNS validation
@@ -1679,7 +1641,7 @@ You completed:
 - production readiness review
 - post-install roadmap and enterprise integration planning
 
-The platform is now ready for the next phase: configuring AAP as code with organizations, teams, RBAC, inventories, projects, job templates, execution environments, workflows, notifications, and enterprise integrations. That next phase is defined in [post-install-platform-configuration.md](post-install-platform-configuration.md).
+The platform is now ready for the next phase: configuring AAP as code with organizations, teams, RBAC, inventories, projects, job templates, execution environments, workflows, notifications, and enterprise integrations.
 
 ## Client-Facing Conclusion
 

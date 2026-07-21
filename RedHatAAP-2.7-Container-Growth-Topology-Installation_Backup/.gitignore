@@ -1,0 +1,12 @@
+.DS_Store
+*.log
+*.retry
+
+# Local secrets and installer artifacts
+.env
+*.pem
+*.key
+*.crt
+manifest*.zip
+auth.json
+containers-auth.json

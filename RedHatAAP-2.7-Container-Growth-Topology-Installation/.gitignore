@@ -1,12 +1,24 @@
 .DS_Store
 *.log
 *.retry
+backups/
+artifacts/
+*.tar
+*.tar.gz
+*.tgz
+*.zip
 
 # Local secrets and installer artifacts
 .env
+.env.*
 *.pem
 *.key
 *.crt
 manifest*.zip
 auth.json
 containers-auth.json
+inventory-growth.original
+inventory-private
+inventory-private.*
+inventory-real
+inventory-real.*

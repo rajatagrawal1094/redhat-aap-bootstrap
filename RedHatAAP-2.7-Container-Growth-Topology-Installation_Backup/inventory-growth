@@ -58,43 +58,43 @@ ansible_connection=local
 # Common variables
 # -----------------------------------------------------
 postgresql_admin_username=postgres
-postgresql_admin_password=<redacted>
+postgresql_admin_password=<hiddeen>
 
 registry_username=<username>
-registry_password=<redacted>
+registry_password=<hiddeen>
 
 redis_mode=standalone
 
 # AAP Gateway
 # -----------------------------------------------------
-gateway_admin_password=<redacted>
+gateway_admin_password=<hiddeen>
 gateway_pg_host=aap.lab.example.com
-gateway_pg_password=<redacted>
+gateway_pg_password=<hiddeen>
 
 # AAP Controller
 # -----------------------------------------------------
-controller_admin_password=<redacted>
+controller_admin_password=<hiddeen>
 controller_pg_host=aap.lab.example.com
-controller_pg_password=<redacted>
+controller_pg_password=<hiddeen>
 controller_percent_memory_capacity=0.5
 
 # AAP Automation Hub
 # -----------------------------------------------------
-hub_admin_password=<redacted>
+hub_admin_password=<hiddeen>
 hub_pg_host=aap.lab.example.com
-hub_pg_password=<redacted>
+hub_pg_password=<hiddeen>
 hub_seed_collections=false
 
 # AAP EDA Controller
 # -----------------------------------------------------
-eda_admin_password=<redacted>
+eda_admin_password=<hiddeen>
 eda_pg_host=aap.lab.example.com
-eda_pg_password=<redacted>
+eda_pg_password=<hiddeen>
 
 # AAP Automation Metrics Service
 # -----------------------------------------------------
 automationmetrics_pg_host=aap.lab.example.com
-automationmetrics_pg_password=<redacted>
+automationmetrics_pg_password=<hiddeen>
 automationmetrics_controller_read_pg_host=aap.lab.example.com
-automationmetrics_controller_read_pg_password=<redacted>
+automationmetrics_controller_read_pg_password=<hiddeen>
 FEATURE_DASHBOARD_COLLECTION_ENABLED=false

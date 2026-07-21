@@ -1,0 +1,239 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="2200" height="1500" viewBox="0 0 2200 1500" role="img" aria-labelledby="title desc">
+  <title id="title">Red Hat Ansible Automation Platform 2.7 container growth topology architecture</title>
+  <desc id="desc">Architecture diagram for a Red Hat Ansible Automation Platform 2.7 container growth topology deployed as rootless Podman containers on a single RHEL 10.2 virtual machine.</desc>
+  <defs>
+    <filter id="softShadow" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="6" stdDeviation="8" flood-color="#1f2937" flood-opacity="0.14"/>
+    </filter>
+    <marker id="arrowRed" markerWidth="12" markerHeight="12" refX="10" refY="6" orient="auto" markerUnits="strokeWidth">
+      <path d="M2,2 L10,6 L2,10 Z" fill="#c9190b"/>
+    </marker>
+    <marker id="arrowBlue" markerWidth="12" markerHeight="12" refX="10" refY="6" orient="auto" markerUnits="strokeWidth">
+      <path d="M2,2 L10,6 L2,10 Z" fill="#2563eb"/>
+    </marker>
+    <marker id="arrowGreen" markerWidth="12" markerHeight="12" refX="10" refY="6" orient="auto" markerUnits="strokeWidth">
+      <path d="M2,2 L10,6 L2,10 Z" fill="#12805c"/>
+    </marker>
+    <style>
+      .bg { fill: #f7f7f2; }
+      .header { fill: #151515; }
+      .redbar { fill: #c9190b; }
+      .title { font: 700 42px Arial, Helvetica, sans-serif; fill: #ffffff; }
+      .subtitle { font: 400 22px Arial, Helvetica, sans-serif; fill: #d2d2d2; }
+      .sectionTitle { font: 700 25px Arial, Helvetica, sans-serif; fill: #151515; }
+      .smallTitle { font: 700 22px Arial, Helvetica, sans-serif; fill: #151515; }
+      .label { font: 400 18px Arial, Helvetica, sans-serif; fill: #383838; }
+      .labelStrong { font: 700 18px Arial, Helvetica, sans-serif; fill: #151515; }
+      .labelSmall { font: 400 16px Arial, Helvetica, sans-serif; fill: #444444; }
+      .code { font: 400 15px "SFMono-Regular", Consolas, "Liberation Mono", monospace; fill: #2f2f2f; }
+      .codeStrong { font: 700 15px "SFMono-Regular", Consolas, "Liberation Mono", monospace; fill: #151515; }
+      .footnote { font: 400 15px Arial, Helvetica, sans-serif; fill: #5f6368; }
+      .host { fill: #ffffff; stroke: #7b7f86; stroke-width: 2.5; rx: 26; filter: url(#softShadow); }
+      .hostHeader { fill: #eceff3; stroke: #7b7f86; stroke-width: 0; rx: 22; }
+      .box { fill: #ffffff; stroke: #d0d7de; stroke-width: 2; rx: 18; filter: url(#softShadow); }
+      .boxRed { fill: #fff5f5; stroke: #c9190b; stroke-width: 2.5; rx: 18; filter: url(#softShadow); }
+      .boxBlue { fill: #f1f6ff; stroke: #2563eb; stroke-width: 2.5; rx: 18; filter: url(#softShadow); }
+      .boxGreen { fill: #f0f9f4; stroke: #12805c; stroke-width: 2.5; rx: 18; filter: url(#softShadow); }
+      .boxPurple { fill: #f7f2ff; stroke: #6b46c1; stroke-width: 2.5; rx: 18; filter: url(#softShadow); }
+      .boxAmber { fill: #fff8e7; stroke: #b7791f; stroke-width: 2.5; rx: 18; filter: url(#softShadow); }
+      .boxSlate { fill: #f6f8fa; stroke: #68717b; stroke-width: 2.5; rx: 18; filter: url(#softShadow); }
+      .tag { fill: #ffffff; stroke: #d0d7de; stroke-width: 1.5; rx: 14; }
+      .tagRed { fill: #c9190b; rx: 14; }
+      .tagBlue { fill: #2563eb; rx: 14; }
+      .tagGreen { fill: #12805c; rx: 14; }
+      .tagPurple { fill: #6b46c1; rx: 14; }
+      .tagText { font: 700 14px Arial, Helvetica, sans-serif; fill: #ffffff; }
+      .lineRed { stroke: #c9190b; stroke-width: 4; fill: none; marker-end: url(#arrowRed); }
+      .lineBlue { stroke: #2563eb; stroke-width: 3.5; fill: none; marker-end: url(#arrowBlue); }
+      .lineGreen { stroke: #12805c; stroke-width: 3.5; fill: none; marker-end: url(#arrowGreen); }
+      .lineGray { stroke: #7b7f86; stroke-width: 2.5; stroke-dasharray: 8 8; fill: none; }
+      .connectionLabel { font: 700 15px Arial, Helvetica, sans-serif; fill: #151515; }
+    </style>
+  </defs>
+
+  <rect class="bg" x="0" y="0" width="2200" height="1500"/>
+  <rect class="header" x="0" y="0" width="2200" height="134"/>
+  <rect class="redbar" x="0" y="134" width="2200" height="10"/>
+  <text class="title" x="80" y="58">Red Hat Ansible Automation Platform 2.7</text>
+  <text class="subtitle" x="80" y="97">Container growth topology on one RHEL 10.2 VM</text>
+  <text class="subtitle" x="1590" y="58">aap.lab.example.com</text>
+  <text class="subtitle" x="1590" y="97">192.168.34.155 | non-FIPS lab</text>
+
+  <!-- External users and install context -->
+  <rect class="box" x="70" y="195" width="365" height="205"/>
+  <text class="smallTitle" x="100" y="235">Users and clients</text>
+  <text class="label" x="100" y="276">Platform admins</text>
+  <text class="label" x="100" y="306">Automation developers</text>
+  <text class="label" x="100" y="336">Operators and requesters</text>
+  <text class="label" x="100" y="366">API clients and integrations</text>
+
+  <rect class="boxSlate" x="70" y="440" width="365" height="320"/>
+  <text class="smallTitle" x="100" y="480">Installer inventory</text>
+  <text class="codeStrong" x="100" y="522">inventory-growth</text>
+  <text class="code" x="100" y="555">[automationgateway]</text>
+  <text class="code" x="100" y="581">[automationcontroller]</text>
+  <text class="code" x="100" y="607">[automationhub]</text>
+  <text class="code" x="100" y="633">[automationeda]</text>
+  <text class="code" x="100" y="659">[automationmetrics]</text>
+  <text class="code" x="100" y="685">[database]</text>
+  <text class="label" x="100" y="724">All groups point to the same VM.</text>
+
+  <rect class="boxAmber" x="70" y="800" width="365" height="265"/>
+  <text class="smallTitle" x="100" y="840">Install inputs</text>
+  <text class="label" x="100" y="881">AAP 2.7 containerized setup</text>
+  <text class="label" x="100" y="911">Red Hat subscription access</text>
+  <text class="label" x="100" y="941">registry.redhat.io credentials</text>
+  <text class="label" x="100" y="971">Subscription manifest in UI</text>
+  <text class="labelSmall" x="100" y="1015">Installer runs locally as rajat</text>
+  <text class="code" x="100" y="1041">ansible_connection=local</text>
+
+  <rect class="boxGreen" x="70" y="1140" width="365" height="215"/>
+  <text class="smallTitle" x="100" y="1180">Managed infrastructure targets</text>
+  <text class="label" x="100" y="1220">Linux and Windows systems</text>
+  <text class="label" x="100" y="1250">Network and security platforms</text>
+  <text class="label" x="100" y="1280">Cloud, DevOps, and edge workloads</text>
+  <text class="labelSmall" x="100" y="1322">Reached through execution capacity</text>
+  <text class="labelSmall" x="100" y="1346">and mesh patterns.</text>
+
+  <!-- Main host boundary -->
+  <rect class="host" x="505" y="195" width="1210" height="1160"/>
+  <rect class="hostHeader" x="525" y="215" width="1170" height="92"/>
+  <text class="sectionTitle" x="555" y="255">Single RHEL host running rootless Podman containers</text>
+  <text class="label" x="555" y="287">VMware VM | RHEL 10.2 | ARM64 | 8 vCPU | 48 GB RAM | 500 GB disk | systemd-managed containers | no Podman pods observed</text>
+
+  <!-- Gateway -->
+  <rect class="boxRed" x="705" y="335" width="800" height="155"/>
+  <rect class="tagRed" x="735" y="360" width="142" height="30"/>
+  <text class="tagText" x="759" y="381">ENTRY POINT</text>
+  <text class="smallTitle" x="735" y="424">Platform Gateway and Gateway Proxy</text>
+  <text class="label" x="735" y="454">Unified UI, API routing, authentication, authorization, and RBAC</text>
+  <text class="code" x="735" y="480">containers: automation-gateway, automation-gateway-proxy</text>
+  <text class="code" x="1085" y="382">/api/gateway/v1  /api/controller/v2  /api/galaxy/v1  /api/eda/v1</text>
+
+  <!-- Core services -->
+  <rect class="boxBlue" x="555" y="555" width="350" height="250"/>
+  <rect class="tagBlue" x="585" y="580" width="122" height="30"/>
+  <text class="tagText" x="611" y="601">CONTROL</text>
+  <text class="smallTitle" x="585" y="644">Automation Controller</text>
+  <text class="label" x="585" y="681">Jobs, workflows, inventories,</text>
+  <text class="label" x="585" y="711">projects, credentials, templates</text>
+  <text class="label" x="585" y="741">and automation execution control</text>
+  <text class="code" x="585" y="780">web | task | rsyslog</text>
+
+  <rect class="boxGreen" x="930" y="555" width="350" height="250"/>
+  <rect class="tagGreen" x="960" y="580" width="112" height="30"/>
+  <text class="tagText" x="993" y="601">CONTENT</text>
+  <text class="smallTitle" x="960" y="644">Private Automation Hub</text>
+  <text class="label" x="960" y="681">Collections, execution</text>
+  <text class="label" x="960" y="711">environment content, content</text>
+  <text class="label" x="960" y="741">distribution, and governance</text>
+  <text class="code" x="960" y="780">api | content | web | workers</text>
+
+  <rect class="boxPurple" x="1305" y="555" width="350" height="250"/>
+  <rect class="tagPurple" x="1335" y="580" width="122" height="30"/>
+  <text class="tagText" x="1374" y="601">EVENTS</text>
+  <text class="smallTitle" x="1335" y="644">Event-Driven Ansible</text>
+  <text class="label" x="1335" y="681">Event streams, rulebooks,</text>
+  <text class="label" x="1335" y="711">activations, decision logic,</text>
+  <text class="label" x="1335" y="741">and event-triggered workflows</text>
+  <text class="code" x="1335" y="780">api | daphne | web | workers</text>
+
+  <!-- Supporting services -->
+  <rect class="boxAmber" x="555" y="865" width="350" height="245"/>
+  <text class="smallTitle" x="585" y="910">Automation Metrics Service</text>
+  <text class="label" x="585" y="948">Required with controller in 2.7</text>
+  <text class="label" x="585" y="978">Reads controller DB read-only</text>
+  <text class="label" x="585" y="1008">Maintains metrics_service DB</text>
+  <text class="labelSmall" x="585" y="1042">Dashboard collection disabled in this lab</text>
+  <text class="code" x="585" y="1080">web | tasks | scheduler</text>
+
+  <rect class="boxGreen" x="930" y="865" width="350" height="245"/>
+  <text class="smallTitle" x="960" y="910">Receptor and Execution Mesh</text>
+  <text class="label" x="960" y="948">Execution routing for jobs</text>
+  <text class="label" x="960" y="978">Connects controller to local or</text>
+  <text class="label" x="960" y="1008">remote execution capacity</text>
+  <text class="labelSmall" x="960" y="1042">Single-node lab today, mesh-ready pattern</text>
+  <text class="code" x="960" y="1080">container: receptor</text>
+
+  <rect class="boxSlate" x="1305" y="865" width="350" height="245"/>
+  <text class="smallTitle" x="1335" y="910">Shared Backing Services</text>
+  <text class="label" x="1335" y="948">PostgreSQL 15 databases</text>
+  <text class="label" x="1335" y="978">Redis tcp and unix services</text>
+  <text class="label" x="1335" y="1008">Used by platform components</text>
+  <text class="labelSmall" x="1335" y="1042">Installer-managed for this single-VM lab</text>
+  <text class="code" x="1335" y="1080">postgresql | redis-tcp | redis-unix</text>
+
+  <rect class="box" x="555" y="1168" width="1100" height="125"/>
+  <text class="smallTitle" x="585" y="1210">Persistent local data</text>
+  <text class="label" x="585" y="1248">Podman named volumes persist databases, hub content, nginx config, receptor data, Redis data, and component state.</text>
+  <text class="code" x="585" y="1278">postgresql, hub_data, eda_data, gateway_nginx, controller_nginx, hub_nginx, receptor_*, redis_*</text>
+
+  <!-- External source systems -->
+  <rect class="box" x="1765" y="195" width="365" height="265"/>
+  <text class="smallTitle" x="1795" y="235">Automation sources</text>
+  <text class="label" x="1795" y="276">Git repositories</text>
+  <text class="label" x="1795" y="306">Ansible Content Collections</text>
+  <text class="label" x="1795" y="336">Execution environment images</text>
+  <text class="label" x="1795" y="366">registry.redhat.io</text>
+  <text class="label" x="1795" y="396">Private content sources</text>
+
+  <rect class="boxPurple" x="1765" y="515" width="365" height="240"/>
+  <text class="smallTitle" x="1795" y="555">Event sources</text>
+  <text class="label" x="1795" y="596">Webhooks and event streams</text>
+  <text class="label" x="1795" y="626">Monitoring and observability</text>
+  <text class="label" x="1795" y="656">GitHub, GitLab, ITSM, SIEM</text>
+  <text class="label" x="1795" y="686">Network and cloud events</text>
+  <text class="labelSmall" x="1795" y="728">EDA evaluates rulebooks and triggers action.</text>
+
+  <rect class="boxRed" x="1765" y="820" width="365" height="240"/>
+  <text class="smallTitle" x="1795" y="860">Platform access model</text>
+  <text class="label" x="1795" y="901">AAP 2.7 routes API access</text>
+  <text class="label" x="1795" y="931">through platform gateway.</text>
+  <text class="label" x="1795" y="961">Direct component API access</text>
+  <text class="label" x="1795" y="991">is not the integration path.</text>
+  <text class="code" x="1795" y="1030">https://gateway-host/...</text>
+
+  <!-- Arrows -->
+  <path class="lineRed" d="M435,298 C535,298 610,412 695,412"/>
+  <text class="connectionLabel" x="468" y="283">HTTPS 443</text>
+
+  <path class="lineRed" d="M850,490 C825,515 785,535 742,550"/>
+  <path class="lineRed" d="M1105,490 C1105,512 1105,530 1105,550"/>
+  <path class="lineRed" d="M1360,490 C1390,515 1430,535 1480,550"/>
+  <text class="connectionLabel" x="972" y="535">Gateway routes UI and APIs</text>
+
+  <path class="lineBlue" d="M1765,326 C1680,326 1665,505 1510,505 C1385,505 1215,525 1118,550"/>
+  <text class="connectionLabel" x="1598" y="498">content sources</text>
+
+  <path class="lineBlue" d="M1765,620 C1685,620 1670,650 1660,675"/>
+  <text class="connectionLabel" x="1666" y="604">events</text>
+
+  <path class="lineGreen" d="M930,1050 C880,1135 660,1135 440,1230"/>
+  <text class="connectionLabel" x="638" y="1128">job execution path</text>
+
+  <path class="lineGreen" d="M905,680 C932,725 970,810 1025,860"/>
+  <path class="lineGreen" d="M1095,805 C1098,828 1100,845 1103,858"/>
+  <text class="connectionLabel" x="920" y="835">execution routing</text>
+
+  <path class="lineGray" d="M732,805 C790,832 842,850 905,900"/>
+  <path class="lineGray" d="M1098,805 C1165,840 1230,875 1300,920"/>
+  <path class="lineGray" d="M1482,805 C1482,825 1482,845 1482,862"/>
+  <path class="lineGray" d="M730,1110 C790,1160 860,1168 965,1168"/>
+  <path class="lineGray" d="M1105,1110 C1105,1140 1105,1155 1105,1168"/>
+  <path class="lineGray" d="M1480,1110 C1480,1140 1480,1155 1480,1168"/>
+  <text class="connectionLabel" x="1298" y="836">local DB, Redis, volumes</text>
+
+  <!-- Legend and source notes -->
+  <rect class="box" x="610" y="1385" width="920" height="72"/>
+  <rect class="tagRed" x="635" y="1406" width="118" height="30"/>
+  <text class="tagText" x="661" y="1427">Gateway</text>
+  <rect class="tagBlue" x="775" y="1406" width="118" height="30"/>
+  <text class="tagText" x="807" y="1427">Control</text>
+  <rect class="tagGreen" x="915" y="1406" width="118" height="30"/>
+  <text class="tagText" x="951" y="1427">Content</text>
+  <rect class="tagPurple" x="1055" y="1406" width="118" height="30"/>
+  <text class="tagText" x="1092" y="1427">Events</text>
+  <text class="labelSmall" x="1198" y="1428">Diagram reflects this lab inventory and observed container runtime after installation.</text>
+
+  <text class="footnote" x="70" y="1465">Reference basis: Red Hat AAP 2.7 containerized installer docs, platform gateway/API docs, metrics service architecture docs, Event-Driven Ansible docs, automation mesh docs, and AAP 2.7 Red Hat blog. Adapted for this single-VM container growth topology lab.</text>
+</svg>
